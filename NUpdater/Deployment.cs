@@ -11,8 +11,6 @@ namespace NUpdater
 {
     public class Deployment
     {
-        private List<DeploymentFile> _files;
-
         public static Deployment FromStream(Stream stream)
         {
             var serializer = new XmlSerializer(typeof(DeploymentTransfer));
@@ -22,7 +20,7 @@ namespace NUpdater
             var d = new Deployment
             {
                 Address = transfer.Address,
-                Version = new Version(transfer.Version),
+                Version = new Version(transfer.Version)
             };
 
             d.Files = transfer.Files.Select(s => new DeploymentFile(d, s)).ToList();
@@ -48,6 +46,7 @@ namespace NUpdater
         public Version Version { get; set; }
         public string Address { get; set; }
 
+        private List<DeploymentFile> _files;
         public List<DeploymentFile> Files
         {
             get { return _files ?? (_files = new List<DeploymentFile>()); }

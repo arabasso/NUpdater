@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<deployment>
+  <version>1.0.0.0</version>
+  <address>http://localhost:1234/App/1_0_0_0/</address>
+  <files>
+    <file name="App.exe" size="4608" date="2016-12-28T08:00:20.6563101-02:00" hash="32fe50ad52b26d8afad1e26d8af2a614" />
+    <file name="App.exe.config" size="77" date="2016-12-28T08:00:04.0360601-02:00" hash="feb8a12f54cdbca11133449147e40b28" />
+    <file name="Source\Program.cs" size="235" date="2016-12-28T07:59:46.2680127-02:00" hash="8458173506da806f2a7b5916177ddebf" />
+  </files>
+</deployment>
