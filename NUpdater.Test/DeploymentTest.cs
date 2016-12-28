@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 
 namespace NUpdater.Test
@@ -55,7 +56,26 @@ namespace NUpdater.Test
         [Test]
         public void Not_has_update()
         {
-            Assert.That(_deployment.HasUpdate(), Is.False);
+            Assert.That(_deployment.ShouldUpdate(), Is.False);
+        }
+
+        [Test]
+        public void Update_is_possible()
+        {
+            Assert.That(_deployment.UpdateIsPossible(), Is.True);
+        }
+
+        [Test]
+        public void Not_update_is_possible()
+        {
+            var firstFile = _deployment.Files.First();
+
+            using (var stream = File.OpenWrite(firstFile.LocalPath))
+            {
+                Assert.That(_deployment.UpdateIsPossible(), Is.False);
+
+                stream.Close();
+            }
         }
     }
 }

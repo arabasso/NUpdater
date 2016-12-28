@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Configuration;
+using System.Net;
+using System.Net.Cache;
 
 namespace NUpdater
 {
     public class Configuration
     {
+        private string _tempDir;
         public Uri Address { get; set; } = new Uri("http://localhost/App/Deployment.xml");
         public string Executable { get; set; } = "App.exe";
         public string Path { get; set; } = "App";
@@ -13,7 +16,20 @@ namespace NUpdater
         public bool AnonymousProxy { get; set; } = true;
         public string ProxyUser { get; set; } = "user";
         public string ProxyPassword { get; set; } = "pass";
-        public string TempDir { get; set; } = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "NUpdater");
+
+        public string TempDir
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_tempDir))
+                {
+                    _tempDir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "NUpdater", Path);
+                }
+
+                return _tempDir;
+            }
+            set { _tempDir = value; }
+        }
 
         public static Configuration FromAppSettings()
         {
@@ -31,13 +47,29 @@ namespace NUpdater
                 ProxyUser = appSettings["ProxyUser"]
             };
 
-            var tempDir = appSettings["TempDir"];
-
-            cfg.TempDir = !string.IsNullOrEmpty(tempDir)
-                ? Environment.ExpandEnvironmentVariables(tempDir)
-                : System.IO.Path.Combine(System.IO.Path.GetTempPath(), "NUpdater", cfg.Path);
-
             return cfg;
+        }
+
+        public WebRequest CreateWebRequest(Uri address)
+        {
+            var request = WebRequest.Create(address);
+
+            if (ProxyEnable)
+            {
+                request.Proxy = new WebProxy
+                {
+                    Address = new Uri(ProxyAddress),
+                };
+
+                if (!AnonymousProxy)
+                {
+                    request.Proxy.Credentials = new NetworkCredential(ProxyUser, ProxyPassword);
+                }
+            }
+
+            request.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
+
+            return request;
         }
     }
 }

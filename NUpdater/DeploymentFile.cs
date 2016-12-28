@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.IO.Compression;
-using System.Net;
 using NUpdater.Transfers;
 
 namespace NUpdater
@@ -25,9 +24,11 @@ namespace NUpdater
 
         public bool ShouldUpdate()
         {
-            if (!WasDownloaded) return false;
+            var localPath = Path.Combine(Deployment.Configuration.Path, Name);
 
-            using (var stream = File.OpenRead(TempPath))
+            if (!File.Exists(localPath)) return true;
+
+            using (var stream = File.OpenRead(localPath))
             {
                 var hash = stream.ToMd5();
 
@@ -35,8 +36,33 @@ namespace NUpdater
             }
         }
 
+        public string LocalPath => Path.Combine(Deployment.Configuration.Path, Name);
         public string TempPath => Path.Combine(Deployment.Configuration.TempDir, Name);
-        public bool WasDownloaded => File.Exists(TempPath);
+        public bool HasTemp => File.Exists(TempPath);
+        public bool HasLocal => File.Exists(LocalPath);
+
+        public bool IsLocked
+        {
+            get
+            {
+                FileStream stream = null;
+
+                try
+                {
+                    stream = File.Open(LocalPath, FileMode.Open, FileAccess.Read, FileShare.None);
+                }
+                catch (IOException)
+                {
+                    return true;
+                }
+                finally
+                {
+                    stream?.Close();
+                }
+
+                return false;
+            }
+        }
 
         public void Download()
         {
@@ -49,7 +75,7 @@ namespace NUpdater
 
             var uri = new Uri(Deployment.Address, Name + ".deploy");
 
-            var request = WebRequest.Create(uri);
+            var request = Deployment.Configuration.CreateWebRequest(uri);
 
             using (var response = request.GetResponse())
             using (var streamIn = response.GetResponseStream())
@@ -66,12 +92,31 @@ namespace NUpdater
             }
         }
 
-        public void DeleteTempPath()
+        public void DeleteTemp()
         {
             if (File.Exists(TempPath))
             {
                 File.Delete(TempPath);
             }
+        }
+
+        public void Update()
+        {
+            if (!ShouldUpdate()) return;
+
+            if (!HasTemp)
+            {
+                Download();
+            }
+
+            var localDir = Path.GetDirectoryName(LocalPath);
+
+            if (localDir != null && !Directory.Exists(localDir))
+            {
+                Directory.CreateDirectory(localDir);
+            }
+
+            File.Copy(TempPath, LocalPath, true);
         }
     }
 }

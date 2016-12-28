@@ -31,9 +31,7 @@ namespace NUpdater
 
         public static Deployment FromUri(Configuration configuration)
         {
-            var request = WebRequest.Create(configuration.Address);
-
-            request.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
+            var request = configuration.CreateWebRequest(configuration.Address);
 
             using (var response = request.GetResponse())
             {
@@ -55,9 +53,14 @@ namespace NUpdater
             set { _files = value; }
         }
 
-        public bool HasUpdate()
+        public bool ShouldUpdate()
         {
-            return false;
+            return Files.Any(deploymentFile => deploymentFile.ShouldUpdate());
+        }
+
+        public bool UpdateIsPossible()
+        {
+            return !Files.Any(a => a.IsLocked);
         }
     }
 }

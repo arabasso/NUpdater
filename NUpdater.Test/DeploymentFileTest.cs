@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 
@@ -18,7 +19,7 @@ namespace NUpdater.Test
         }
 
         [Test]
-        public void Not_downloaded_not_should_update()
+        public void Not_should_update()
         {
             var file = _deployment.Files.First();
 
@@ -26,15 +27,27 @@ namespace NUpdater.Test
         }
 
         [Test]
-        public void Downloaded_but_not_should_update()
+        public void Should_update()
         {
+            _deployment.Configuration.Path = "App2";
+
             var file = _deployment.Files.First();
 
-            file.Download();
+            Assert.That(file.ShouldUpdate(), Is.True);
+        }
 
-            Assert.That(file.ShouldUpdate(), Is.False);
+        [Test]
+        public void Update_file()
+        {
+            _deployment.Configuration.Path = "App2";
 
-            file.DeleteTempPath();
+            var file = _deployment.Files.First();
+
+            file.Update();
+
+            Assert.That(file.HasLocal, Is.True);
+
+            File.Delete(file.LocalPath);
         }
 
         [Test]
@@ -46,15 +59,31 @@ namespace NUpdater.Test
         }
 
         [Test]
-        public void Was_downloaded()
+        public void Local_path()
+        {
+            var file = _deployment.Files.First();
+
+            Assert.That(file.LocalPath, Is.EqualTo(@"App\App.exe"));
+        }
+
+        [Test]
+        public void has_temp()
         {
             var file = _deployment.Files.First();
 
             file.Download();
 
-            Assert.That(file.WasDownloaded, Is.True);
+            Assert.That(file.HasTemp, Is.True);
 
-            file.DeleteTempPath();
+            file.DeleteTemp();
+        }
+
+        [Test]
+        public void has_local()
+        {
+            var file = _deployment.Files.First();
+
+            Assert.That(file.HasLocal, Is.True);
         }
 
         [Test]
@@ -64,11 +93,11 @@ namespace NUpdater.Test
 
             file.Download();
 
-            Assert.That(file.WasDownloaded, Is.True);
+            Assert.That(file.HasTemp, Is.True);
 
-            file.DeleteTempPath();
+            file.DeleteTemp();
 
-            Assert.That(file.WasDownloaded, Is.False);
+            Assert.That(file.HasTemp, Is.False);
         }
 
         [Test]
@@ -76,7 +105,7 @@ namespace NUpdater.Test
         {
             var file = _deployment.Files.Last();
 
-            Assert.That(file.WasDownloaded, Is.False);
+            Assert.That(file.HasTemp, Is.False);
         }
     }
 }
