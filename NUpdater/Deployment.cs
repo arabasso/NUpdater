@@ -11,7 +11,7 @@ namespace NUpdater
 {
     public class Deployment
     {
-        public static Deployment FromStream(Stream stream)
+        public static Deployment FromStream(Configuration configuration, Stream stream)
         {
             var serializer = new XmlSerializer(typeof(DeploymentTransfer));
 
@@ -19,7 +19,8 @@ namespace NUpdater
 
             var d = new Deployment
             {
-                Address = transfer.Address,
+                Configuration = configuration,
+                Address = new Uri(transfer.Address),
                 Version = new Version(transfer.Version)
             };
 
@@ -28,9 +29,9 @@ namespace NUpdater
             return d;
         }
 
-        public static Deployment FromUri(Uri uri)
+        public static Deployment FromUri(Configuration configuration)
         {
-            var request = WebRequest.Create(uri);
+            var request = WebRequest.Create(configuration.Address);
 
             request.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
 
@@ -38,19 +39,25 @@ namespace NUpdater
             {
                 using (var stream = response.GetResponseStream())
                 {
-                    return FromStream(stream);
+                    return FromStream(configuration, stream);
                 }
             }
         }
 
+        public Configuration Configuration { get; set; }
         public Version Version { get; set; }
-        public string Address { get; set; }
+        public Uri Address { get; set; }
 
         private List<DeploymentFile> _files;
         public List<DeploymentFile> Files
         {
             get { return _files ?? (_files = new List<DeploymentFile>()); }
             set { _files = value; }
+        }
+
+        public bool HasUpdate()
+        {
+            return false;
         }
     }
 }

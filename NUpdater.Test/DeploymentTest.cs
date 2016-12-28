@@ -7,14 +7,14 @@ namespace NUpdater.Test
     [TestFixture]
     public class DeploymentTest
     {
-        private Uri _uri;
+        private Configuration _configuration;
         private Deployment _deployment;
 
         [SetUp]
         public void Set_up()
         {
-            _uri = new Uri("http://localhost:1234/App/Deployment.xml");
-            _deployment = Deployment.FromUri(_uri);
+            _configuration = Configuration.FromAppSettings();
+            _deployment = Deployment.FromUri(_configuration);
         }
 
         [Test]
@@ -22,7 +22,7 @@ namespace NUpdater.Test
         {
             using (var stream = File.OpenRead(@"Remote\App\Deployment.xml"))
             {
-                var deployment = Deployment.FromStream(stream);
+                var deployment = Deployment.FromStream(_configuration, stream);
 
                 Assert.That(deployment, Is.Not.Null);
             }
@@ -37,7 +37,7 @@ namespace NUpdater.Test
         [Test]
         public void From_uri_check_address()
         {
-            Assert.That(_deployment.Address, Is.EqualTo("http://localhost:1234/App/1_0_0_0/"));
+            Assert.That(_deployment.Address, Is.EqualTo(new Uri("http://localhost:1234/App/1_0_0_0/")));
         }
 
         [Test]
@@ -50,6 +50,12 @@ namespace NUpdater.Test
         public void From_uri_check_files()
         {
             Assert.That(_deployment.Files, Has.Count.EqualTo(3));
+        }
+
+        [Test]
+        public void Not_has_update()
+        {
+            Assert.That(_deployment.HasUpdate(), Is.False);
         }
     }
 }
