@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUpdater", "NUpdater\NUpdater.csproj", "{5B86AF01-4B45-4B1B-9D6B-75DED35A27AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUpdater.Test", "NUpdater.Test\NUpdater.Test.csproj", "{ABF888DE-5E5A-4D49-84A1-9AE92BF3CC6B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{5B86AF01-4B45-4B1B-9D6B-75DED35A27AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B86AF01-4B45-4B1B-9D6B-75DED35A27AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B86AF01-4B45-4B1B-9D6B-75DED35A27AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABF888DE-5E5A-4D49-84A1-9AE92BF3CC6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABF888DE-5E5A-4D49-84A1-9AE92BF3CC6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABF888DE-5E5A-4D49-84A1-9AE92BF3CC6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABF888DE-5E5A-4D49-84A1-9AE92BF3CC6B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
