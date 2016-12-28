@@ -61,5 +61,11 @@ namespace NUpdater.Test
         {
             Assert.That(_configuration.ProxyPassword, Is.EqualTo("pass"));
         }
+
+        [Test]
+        public void Application_installed()
+        {
+            Assert.That(_configuration.ApplicationInstalled, Is.True);
+        }
     }
 }

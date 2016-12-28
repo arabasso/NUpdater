@@ -38,23 +38,39 @@ namespace NUpdater
 
         public string LocalPath => Path.Combine(Deployment.Configuration.Path, Name);
         public string TempPath => Path.Combine(Deployment.Configuration.TempDir, Name);
-        public bool HasTemp => File.Exists(TempPath);
+        public bool HasTemp
+        {
+            get
+            {
+                if (!File.Exists(TempPath)) return false;
+
+                using (var stream = File.OpenRead(TempPath))
+                {
+                    return stream.ToMd5() == Hash;
+                }
+            }
+        }
+
         public bool HasLocal => File.Exists(LocalPath);
 
         public bool IsLocked
         {
             get
             {
+                if (!File.Exists(LocalPath)) return false;
+
                 FileStream stream = null;
 
                 try
                 {
                     stream = File.Open(LocalPath, FileMode.Open, FileAccess.Read, FileShare.None);
                 }
+
                 catch (IOException)
                 {
                     return true;
                 }
+
                 finally
                 {
                     stream?.Close();
@@ -77,6 +93,13 @@ namespace NUpdater
 
             var request = Deployment.Configuration.CreateWebRequest(uri);
 
+            var path = Path.GetDirectoryName(TempPath);
+
+            if (path != null && !Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
             using (var response = request.GetResponse())
             using (var streamIn = response.GetResponseStream())
             using (var stream = new DeflateStream(streamIn, CompressionMode.Decompress))
@@ -88,6 +111,22 @@ namespace NUpdater
                 while ((count = stream.Read(buffer, 0, buffer.Length)) > 0)
                 {
                     streamOut.Write(buffer, 0, count);
+                }
+            }
+
+            if (!HasTemp)
+            {
+                throw new BadImageFormatException();
+            }
+        }
+
+        private bool IsValidTempPathHash
+        {
+            get
+            {
+                using (var stream = File.OpenRead(TempPath))
+                {
+                    return stream.ToMd5() == Hash;
                 }
             }
         }
