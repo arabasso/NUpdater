@@ -31,12 +31,18 @@ namespace NUpdater
         {
             var request = configuration.CreateWebRequest(configuration.Address);
 
+            var deploymentFile = Path.Combine(configuration.TempDir, "Deployment.xml");
+
             using (var response = request.GetResponse())
+            using (var stream = response.GetResponseStream())
+            using (var streamOut = File.OpenWrite(deploymentFile))
             {
-                using (var stream = response.GetResponseStream())
-                {
-                    return FromStream(configuration, stream);
-                }
+                stream.CopyTo(streamOut);
+            }
+
+            using (var stream = File.OpenRead(deploymentFile))
+            {
+                return FromStream(configuration, stream);
             }
         }
 
@@ -59,6 +65,14 @@ namespace NUpdater
         public bool UpdateIsPossible()
         {
             return !Files.Any(a => a.IsLocked);
+        }
+
+        public void Update()
+        {
+            foreach (var file in Files.Where(w => !w.IsLocked))
+            {
+                file.Update();
+            }
         }
     }
 }
