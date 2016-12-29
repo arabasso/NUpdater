@@ -255,7 +255,6 @@ namespace NUpdater
         public void Log(Exception exception)
         {
             _notify.ShowBalloonTip(10000, "", exception.Message, ToolTipIcon.Error);
-            Thread.Sleep(5000);
         }
 
         public void Dispose()
