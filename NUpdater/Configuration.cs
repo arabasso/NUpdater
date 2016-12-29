@@ -20,6 +20,7 @@ namespace NUpdater
         public string ProxyUser { get; set; } = "user";
         public string ProxyPassword { get; set; } = "pass";
 
+        public bool HasTempDir => Directory.Exists(TempDir);
         public string TempDir
         {
             get

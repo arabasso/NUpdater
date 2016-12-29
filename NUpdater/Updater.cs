@@ -11,10 +11,44 @@ namespace NUpdater
     public class Updater
     {
         private readonly Configuration _configuration;
+        private Deployment _deployment;
+
+        public Deployment Deployment => _deployment ?? (_deployment = Deployment.FromUri(_configuration));
+
+        private long? _totalDownload;
+        public long TotalDownload => _totalDownload ?? (long)(_totalDownload = Deployment.TotalDownload);
 
         public Updater()
         {
             _configuration = Configuration.FromAppSettings();
+        }
+
+        public event DownloadProgressEventHandler DownloadProgress;
+
+        protected void OnDownloadProgress(DownloadProgressEventArgs args)
+        {
+            DownloadProgress?.Invoke(args);
+        }
+
+        public event DownloadEventHandler StartDownload;
+
+        protected void OnStartDownload(DownloadEventArgs args)
+        {
+            StartDownload?.Invoke(args);
+        }
+
+        public event DownloadEventHandler DownloadCompleted;
+
+        protected void OnDownloadCompleted(DownloadEventArgs args)
+        {
+            DownloadCompleted?.Invoke(args);
+        }
+
+        public event UpdateEventHandler UpdateFile;
+
+        protected void OnUpdateFile(UpdateEventArgs args)
+        {
+            UpdateFile?.Invoke(args);
         }
 
         public void Start()
@@ -22,37 +56,22 @@ namespace NUpdater
             var notify = new NotifyIcon
             {
                 Visible = true,
-                Icon = Properties.Resources.Icon32x32
+                Icon = Properties.Resources.Icon_ico
             };
 
             try
             {
-                if (PriorProcess(Process.GetCurrentProcess()) != null) return;
-
-                if (_configuration.ApplicationInstalled)
-                {
-                    RunApplication();
-                }
-
-                var deployment = Deployment.FromUri(_configuration);
-
-                if (!deployment.ShouldUpdate()) return;
+                Deployment.SaveLocal();
 
                 notify.ShowBalloonTip(10000, "", string.Format(Properties.Resources.NewUpdate, _configuration.Path), ToolTipIcon.Info);
 
-                foreach (var file in deployment.Files.Where(file => !file.HasTemp))
+                Deployment.DownloadProgress += OnDownloadProgress;
+                Deployment.StartDownload += OnStartDownload;
+                Deployment.DownloadCompleted += OnDownloadCompleted;
+
+                foreach (var file in Deployment.Files.Where(file => file.ShouldDownload()))
                 {
                     file.Download();
-                }
-
-                if (_configuration.ApplicationInstalled)
-                {
-                    RunApplication();
-                }
-
-                else
-                {
-                    notify.ShowBalloonTip(10000, "", string.Format(Properties.Resources.SucessUpdate, _configuration.Path), ToolTipIcon.Info);
                 }
             }
 
@@ -71,15 +90,12 @@ namespace NUpdater
         {
             if (_configuration.HasLocalDeploymentPath)
             {
-                Deployment deployment;
-
-                using (var stream = File.OpenRead(_configuration.LocalDeploymentPath))
-                {
-                    deployment = Deployment.FromStream(_configuration, stream);
-                }
+                var deployment = Deployment.FromCache(_configuration);
 
                 if (deployment.UpdateIsPossible())
                 {
+                    deployment.UpdateFile += OnUpdateFile;
+
                     deployment.Update();
 
                     DeleteTemp();
@@ -88,7 +104,7 @@ namespace NUpdater
 
             if (_configuration.SingleInstance)
             {
-                var p = PriorProcess(_configuration.ApplicationPath);
+                var p = PriorApplicationProcess();
 
                 if (p != null)
                 {
@@ -98,14 +114,23 @@ namespace NUpdater
                 }
             }
 
+            if (!_configuration.ApplicationInstalled) return;
+
             try
             {
                 Process.Start(_configuration.ApplicationPath);
             }
+
             catch
             {
                 // Ignore
             }
+        }
+
+        public Process PriorApplicationProcess()
+        {
+            var p = PriorProcess(_configuration.ApplicationPath);
+            return p;
         }
 
         [DllImport("user32.dll")]
@@ -182,15 +207,6 @@ namespace NUpdater
             return null;
         }
 
-        public Process PriorProcess(Process curr)
-        {
-            var currentSessionId = Process.GetCurrentProcess().SessionId;
-
-            var procs = Process.GetProcessesByName(curr.ProcessName);
-
-            return procs.FirstOrDefault(p => (p.SessionId == currentSessionId) && (p.Id != curr.Id) && (p.MainModule.FileName == curr.MainModule.FileName));
-        }
-
         public void DeleteTemp()
         {
             foreach (var file in Directory.EnumerateFiles(_configuration.TempDir, "*.*", SearchOption.AllDirectories))
@@ -218,6 +234,16 @@ namespace NUpdater
                     // Ignore
                 }
             }
+        }
+
+        public bool ShouldUpdate()
+        {
+            return Deployment.ShouldUpdate();
+        }
+
+        public bool ShouldDownload()
+        {
+            return Deployment.ShouldDownload();
         }
     }
 }

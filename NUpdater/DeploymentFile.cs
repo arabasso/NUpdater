@@ -22,6 +22,11 @@ namespace NUpdater
             Hash = transfer.Hash;
         }
 
+        public bool ShouldDownload()
+        {
+            return ShouldUpdate() && !HasTemp;
+        }
+
         public bool ShouldUpdate()
         {
             var localPath = Path.Combine(Deployment.Configuration.Path, Name);
@@ -82,11 +87,9 @@ namespace NUpdater
 
         public void Download()
         {
-            var tempDir = Deployment.Configuration.TempDir;
-
-            if (!Directory.Exists(tempDir))
+            if (!Deployment.Configuration.HasTempDir)
             {
-                Directory.CreateDirectory(tempDir);
+                Directory.CreateDirectory(Deployment.Configuration.TempDir);
             }
 
             var uri = new Uri(Deployment.Address, Name + ".deploy");
@@ -100,6 +103,10 @@ namespace NUpdater
                 Directory.CreateDirectory(path);
             }
 
+            Deployment.OnStartDownload(this);
+
+            var index = 0;
+
             using (var response = request.GetResponse())
             using (var streamIn = response.GetResponseStream())
             using (var stream = new DeflateStream(streamIn, CompressionMode.Decompress))
@@ -110,24 +117,19 @@ namespace NUpdater
 
                 while ((count = stream.Read(buffer, 0, buffer.Length)) > 0)
                 {
+                    index += count;
+
+                    Deployment.OnDownloadProgress(this, count, index);
+
                     streamOut.Write(buffer, 0, count);
                 }
             }
 
+            Deployment.OnDownloadCompleted(this);
+
             if (!HasTemp)
             {
                 throw new BadImageFormatException();
-            }
-        }
-
-        private bool IsValidTempPathHash
-        {
-            get
-            {
-                using (var stream = File.OpenRead(TempPath))
-                {
-                    return stream.ToMd5() == Hash;
-                }
             }
         }
 
@@ -155,7 +157,20 @@ namespace NUpdater
                 Directory.CreateDirectory(localDir);
             }
 
+            Deployment.OnUpdateFile(this);
+
             File.Copy(TempPath, LocalPath, true);
+        }
+
+        public DeploymentFileTransfer ToTransfer()
+        {
+            return new DeploymentFileTransfer
+            {
+                Name = Name,
+                Hash = Hash,
+                Date = Date,
+                Size = Size
+            };
         }
     }
 }

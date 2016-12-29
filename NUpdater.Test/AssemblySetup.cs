@@ -25,6 +25,7 @@ namespace NUpdater.Test
                     {
                         Handle(_listener.GetContext());
                     }
+
                     catch
                     {
                         // Ignore

@@ -61,11 +61,39 @@ namespace NUpdater.Properties {
         }
         
         /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Atualizando {0}.
+        /// </summary>
+        internal static string AppUpdate {
+            get {
+                return ResourceManager.GetString("AppUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Baixando {0}.
+        /// </summary>
+        internal static string DownloadFileProgress {
+            get {
+                return ResourceManager.GetString("DownloadFileProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Icon {
+            get {
+                object obj = ResourceManager.GetObject("Icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Icon semelhante a (Ícone).
         /// </summary>
-        internal static System.Drawing.Icon Icon32x32 {
+        internal static System.Drawing.Icon Icon_ico {
             get {
-                object obj = ResourceManager.GetObject("Icon32x32", resourceCulture);
+                object obj = ResourceManager.GetObject("Icon_ico", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -80,11 +108,56 @@ namespace NUpdater.Properties {
         }
         
         /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Deseja reiniciar o {0}?.
+        /// </summary>
+        internal static string RestartApplication {
+            get {
+                return ResourceManager.GetString("RestartApplication", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Reiniciar.
+        /// </summary>
+        internal static string RestartApplicationTitle {
+            get {
+                return ResourceManager.GetString("RestartApplicationTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Consulta uma cadeia de caracteres localizada semelhante a Atualização concluída\nPor favor, reinicie o {0}.
         /// </summary>
         internal static string SucessUpdate {
             get {
                 return ResourceManager.GetString("SucessUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Progresso geral.
+        /// </summary>
+        internal static string TotalProgress {
+            get {
+                return ResourceManager.GetString("TotalProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Atualizando {0}.
+        /// </summary>
+        internal static string UpdateFileProgress {
+            get {
+                return ResourceManager.GetString("UpdateFileProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Isto pode levar vários minutos. Você pode usar seu computador para fazer outras coisas durante a instalação..
+        /// </summary>
+        internal static string UpdateMessage {
+            get {
+                return ResourceManager.GetString("UpdateMessage", resourceCulture);
             }
         }
     }
