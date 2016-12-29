@@ -99,7 +99,7 @@ namespace NUpdater.Properties {
         }
         
         /// <summary>
-        ///   Consulta uma cadeia de caracteres localizada semelhante a Nova atualização do {0} ({1})\r\n{2}.
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Nova atualização do {0} ({1}).
         /// </summary>
         internal static string NewUpdate {
             get {

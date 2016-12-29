@@ -131,7 +131,7 @@
     <value>..\resources\icon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="NewUpdate" xml:space="preserve">
-    <value>Nova atualização do {0} ({1})\r\n{2}</value>
+    <value>Nova atualização do {0} ({1})</value>
   </data>
   <data name="RestartApplication" xml:space="preserve">
     <value>Deseja reiniciar o {0}?</value>

@@ -65,10 +65,9 @@ namespace NUpdater
             {
                 Deployment.SaveLocal();
 
-                var message = string.Format(Properties.Resources.NewUpdate, _configuration.Name, Deployment.Version,
-                    Deployment.Configuration.Company);
+                var message = string.Format(Properties.Resources.NewUpdate, _configuration.Name, Deployment.Version);
 
-                _notify.ShowBalloonTip(10000, "", message.Replace("\\r\\n", Environment.NewLine), ToolTipIcon.Info);
+                _notify.ShowBalloonTip(10000, Deployment.Configuration.Company, message, ToolTipIcon.Info);
 
                 Deployment.DownloadProgress += OnDownloadProgress;
                 Deployment.StartDownload += OnStartDownload;
@@ -82,8 +81,7 @@ namespace NUpdater
 
             catch (Exception ex)
             {
-                _notify.ShowBalloonTip(10000, "", ex.Message, ToolTipIcon.Error);
-                Thread.Sleep(2000);
+                Log(ex);
             }
 
             finally
