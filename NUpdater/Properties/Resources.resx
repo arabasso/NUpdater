@@ -128,16 +128,19 @@
     <value>..\Resources\Icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Icon_ico" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\Icon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\resources\icon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="NewUpdate" xml:space="preserve">
-    <value>Nova atualização do {0}</value>
+    <value>Nova atualização do {0} ({1})\r\n{2}</value>
   </data>
   <data name="RestartApplication" xml:space="preserve">
     <value>Deseja reiniciar o {0}?</value>
   </data>
   <data name="RestartApplicationTitle" xml:space="preserve">
     <value>Reiniciar</value>
+  </data>
+  <data name="String1" xml:space="preserve">
+    <value>Versão {0}</value>
   </data>
   <data name="SucessUpdate" xml:space="preserve">
     <value>Atualização concluída\nPor favor, reinicie o {0}</value>

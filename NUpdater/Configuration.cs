@@ -10,6 +10,8 @@ namespace NUpdater
     public class Configuration
     {
         private string _tempDir;
+        public string Name { get; set; } = "App";
+        public string Company { get; set; } = "Company";
         public Uri Address { get; set; } = new Uri("http://localhost/App/Deployment.xml");
         public bool SingleInstance { get; set; } = true;
         public string Executable { get; set; } = "App.exe";
@@ -43,6 +45,8 @@ namespace NUpdater
 
             var cfg = new Configuration
             {
+                Name = appSettings["Name"],
+                Company = appSettings["Company"],
                 Address = new Uri(appSettings["Address"]),
                 Path = appSettings["Path"],
                 AnonymousProxy = bool.Parse(appSettings["AnonymousProxy"]),

@@ -99,7 +99,7 @@ namespace NUpdater.Properties {
         }
         
         /// <summary>
-        ///   Consulta uma cadeia de caracteres localizada semelhante a Nova atualização do {0}.
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Nova atualização do {0} ({1})\r\n{2}.
         /// </summary>
         internal static string NewUpdate {
             get {
@@ -122,6 +122,15 @@ namespace NUpdater.Properties {
         internal static string RestartApplicationTitle {
             get {
                 return ResourceManager.GetString("RestartApplicationTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Versão {0}.
+        /// </summary>
+        internal static string String1 {
+            get {
+                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
         

@@ -3,12 +3,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace NUpdater
 {
-    public class Updater
+    public class Updater : IDisposable
     {
         private readonly Configuration _configuration;
         private Deployment _deployment;
@@ -16,10 +17,17 @@ namespace NUpdater
         public Deployment Deployment => _deployment ?? (_deployment = Deployment.FromUri(_configuration));
 
         private long? _totalDownload;
+        private readonly NotifyIcon _notify;
         public long TotalDownload => _totalDownload ?? (long)(_totalDownload = Deployment.TotalDownload);
 
         public Updater()
         {
+            _notify = new NotifyIcon
+            {
+                Visible = true,
+                Icon = Properties.Resources.Icon_ico
+            };
+
             _configuration = Configuration.FromAppSettings();
         }
 
@@ -53,17 +61,14 @@ namespace NUpdater
 
         public void Start()
         {
-            var notify = new NotifyIcon
-            {
-                Visible = true,
-                Icon = Properties.Resources.Icon_ico
-            };
-
             try
             {
                 Deployment.SaveLocal();
 
-                notify.ShowBalloonTip(10000, "", string.Format(Properties.Resources.NewUpdate, _configuration.Path), ToolTipIcon.Info);
+                var message = string.Format(Properties.Resources.NewUpdate, _configuration.Name, Deployment.Version,
+                    Deployment.Configuration.Company);
+
+                _notify.ShowBalloonTip(10000, "", message.Replace("\\r\\n", Environment.NewLine), ToolTipIcon.Info);
 
                 Deployment.DownloadProgress += OnDownloadProgress;
                 Deployment.StartDownload += OnStartDownload;
@@ -77,12 +82,13 @@ namespace NUpdater
 
             catch (Exception ex)
             {
-                notify.ShowBalloonTip(10000, "", ex.Message, ToolTipIcon.Error);
+                _notify.ShowBalloonTip(10000, "", ex.Message, ToolTipIcon.Error);
+                Thread.Sleep(2000);
             }
 
             finally
             {
-                notify.Visible = false;
+                _notify.Visible = false;
             }
         }
 
@@ -244,6 +250,17 @@ namespace NUpdater
         public bool ShouldDownload()
         {
             return Deployment.ShouldDownload();
+        }
+
+        public void Log(Exception exception)
+        {
+            _notify.ShowBalloonTip(10000, "", exception.Message, ToolTipIcon.Error);
+            Thread.Sleep(5000);
+        }
+
+        public void Dispose()
+        {
+            _notify.Visible = false;
         }
     }
 }

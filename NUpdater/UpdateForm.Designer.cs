@@ -54,10 +54,10 @@
             // 
             // UpdatingMessageLabel
             // 
-            this.UpdatingMessageLabel.Location = new System.Drawing.Point(12, 33);
+            this.UpdatingMessageLabel.Location = new System.Drawing.Point(12, 43);
             this.UpdatingMessageLabel.Name = "UpdatingMessageLabel";
-            this.UpdatingMessageLabel.Size = new System.Drawing.Size(363, 43);
-            this.UpdatingMessageLabel.TabIndex = 1;
+            this.UpdatingMessageLabel.Size = new System.Drawing.Size(401, 32);
+            this.UpdatingMessageLabel.TabIndex = 2;
             this.UpdatingMessageLabel.Text = "This may take several minutes. You can use your computer to do other tasks during" +
     " installation.";
             // 
@@ -70,7 +70,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(497, 76);
+            this.panel1.Size = new System.Drawing.Size(497, 94);
             this.panel1.TabIndex = 0;
             // 
             // pictureBox1
@@ -79,45 +79,45 @@
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.Location = new System.Drawing.Point(419, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(78, 76);
+            this.pictureBox1.Size = new System.Drawing.Size(78, 94);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 2;
             this.pictureBox1.TabStop = false;
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 109);
+            this.progressBar1.Location = new System.Drawing.Point(12, 130);
             this.progressBar1.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(473, 23);
-            this.progressBar1.TabIndex = 3;
+            this.progressBar1.TabIndex = 2;
             // 
             // TotalProgressLabel
             // 
             this.TotalProgressLabel.AutoSize = true;
-            this.TotalProgressLabel.Location = new System.Drawing.Point(12, 145);
+            this.TotalProgressLabel.Location = new System.Drawing.Point(12, 166);
             this.TotalProgressLabel.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
             this.TotalProgressLabel.Name = "TotalProgressLabel";
             this.TotalProgressLabel.Size = new System.Drawing.Size(74, 13);
-            this.TotalProgressLabel.TabIndex = 4;
+            this.TotalProgressLabel.TabIndex = 3;
             this.TotalProgressLabel.Text = "Total progress";
             // 
             // progressBar2
             // 
-            this.progressBar2.Location = new System.Drawing.Point(12, 168);
+            this.progressBar2.Location = new System.Drawing.Point(12, 189);
             this.progressBar2.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
             this.progressBar2.Name = "progressBar2";
             this.progressBar2.Size = new System.Drawing.Size(473, 23);
-            this.progressBar2.TabIndex = 5;
+            this.progressBar2.TabIndex = 4;
             // 
             // DownloadingLabel
             // 
             this.DownloadingLabel.AutoSize = true;
-            this.DownloadingLabel.Location = new System.Drawing.Point(12, 86);
+            this.DownloadingLabel.Location = new System.Drawing.Point(12, 107);
             this.DownloadingLabel.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
             this.DownloadingLabel.Name = "DownloadingLabel";
             this.DownloadingLabel.Size = new System.Drawing.Size(69, 13);
-            this.DownloadingLabel.TabIndex = 2;
+            this.DownloadingLabel.TabIndex = 1;
             this.DownloadingLabel.Text = "Downloading";
             // 
             // UpdateWorker
@@ -132,7 +132,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(497, 207);
+            this.ClientSize = new System.Drawing.Size(497, 224);
             this.Controls.Add(this.DownloadingLabel);
             this.Controls.Add(this.progressBar2);
             this.Controls.Add(this.TotalProgressLabel);

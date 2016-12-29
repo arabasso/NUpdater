@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace NUpdater
@@ -19,17 +20,27 @@ namespace NUpdater
         [STAThread]
         static void Main()
         {
-            if (PriorProcess(Process.GetCurrentProcess()) != null) return;
-
-            var updater = new Updater();
-
-            updater.RunApplication();
-
-            if (!updater.ShouldDownload()) return;
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new UpdateForm(updater));
+
+            using (var updater = new Updater())
+            {
+                try
+                {
+                    if (PriorProcess(Process.GetCurrentProcess()) != null) return;
+
+                    updater.RunApplication();
+
+                    if (!updater.ShouldDownload()) return;
+
+                    Application.Run(new UpdateForm(updater));
+                }
+
+                catch (Exception ex)
+                {
+                    updater.Log(ex);
+                }
+            }
         }
     }
 }

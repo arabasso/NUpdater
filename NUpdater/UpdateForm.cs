@@ -13,15 +13,15 @@ namespace NUpdater
 
             InitializeComponent();
 
-            Text = string.Format(Properties.Resources.AppUpdate, _updater.Deployment.Configuration.Path);
-            UpdatingAppLabel.Text = string.Format(Properties.Resources.AppUpdate, _updater.Deployment.Configuration.Path);
+            Text = _updater.Deployment.Configuration.Company + @" - " + string.Format(Properties.Resources.AppUpdate, _updater.Deployment.Configuration.Name);
+            UpdatingAppLabel.Text = string.Format(Properties.Resources.AppUpdate, _updater.Deployment.Configuration.Name) + @" (" + _updater.Deployment.Version + @")";
             UpdatingMessageLabel.Text = Properties.Resources.UpdateMessage;
             DownloadingLabel.Text = string.Format(Properties.Resources.DownloadFileProgress, "");
             TotalProgressLabel.Text = Properties.Resources.TotalProgress;
 
             _updater.StartDownload += args =>
             {
-                BeginInvoke(new Action(() =>
+                Invoke(new Action(() =>
                 {
                     DownloadingLabel.Text = string.Format(Properties.Resources.DownloadFileProgress, args.File.Name);
                 }));
@@ -29,7 +29,7 @@ namespace NUpdater
             _updater.DownloadProgress += args => UpdateWorker.ReportProgress((int)args.Percent, args);
             _updater.UpdateFile += args =>
             {
-                BeginInvoke(new Action(() =>
+                Invoke(new Action(() =>
                 {
                     DownloadingLabel.Text = string.Format(Properties.Resources.UpdateFileProgress, args.File.Name);
                 }));
@@ -53,11 +53,8 @@ namespace NUpdater
 
             if (p != null)
             {
-                var message = string.Format(Properties.Resources.RestartApplication,
-                    _updater.Deployment.Configuration.Path);
-
-                var result = MessageBox.Show(this, message, Properties.Resources.RestartApplicationTitle,
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                var result = (DialogResult)Invoke(new Func<DialogResult>(() => MessageBox.Show(this, string.Format(Properties.Resources.RestartApplication,
+                        _updater.Deployment.Configuration.Path), Properties.Resources.RestartApplicationTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question)));
 
                 if (result == DialogResult.Yes)
                 {
