@@ -68,6 +68,7 @@
     <Compile Include="Configuration.cs" />
     <Compile Include="Deployment.cs" />
     <Compile Include="DeploymentFile.cs" />
+    <Compile Include="Events.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Transfers\DeploymentTransfer.cs" />
     <Compile Include="Transfers\DeploymentFileTransfer.cs" />

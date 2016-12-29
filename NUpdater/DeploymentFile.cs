@@ -7,6 +7,8 @@ namespace NUpdater
 {
     public class DeploymentFile
     {
+        private FileInfo _fileInfo;
+        private bool _deploy;
         public Deployment Deployment { get; }
         public string Name { get; set; }
         public long Size { get; set; }
@@ -20,6 +22,24 @@ namespace NUpdater
             Size = transfer.Size;
             Date = transfer.Date;
             Hash = transfer.Hash;
+        }
+
+        public DeploymentFile(Deployment deployment, string source, string file)
+        {
+            var fullPath = Path.GetFullPath(source);
+
+            _fileInfo = new FileInfo(file);
+
+            Deployment = deployment;
+            Date = _fileInfo.LastWriteTime;
+            Size = _fileInfo.Length;
+            Name = _fileInfo.FullName.Replace(fullPath, string.Empty).Substring(1);
+            _deploy = true;
+
+            using (var stream = _fileInfo.OpenRead())
+            {
+                Hash = stream.ToMd5();
+            }
         }
 
         public bool ShouldDownload()
@@ -171,6 +191,33 @@ namespace NUpdater
                 Date = Date,
                 Size = Size
             };
+        }
+
+        public void Save()
+        {
+            if (!_deploy && _fileInfo == null) return;
+
+            var file = Path.Combine(Deployment.BuildVersion, Name) + @".deploy";
+
+            var dir = Path.GetDirectoryName(file);
+
+            if (dir != null && !Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            using (var streamIn = _fileInfo.OpenRead())
+            using (var stream = File.OpenWrite(file))
+            using (var streamOut = new DeflateStream(stream, CompressionMode.Compress))
+            {
+                int count;
+                var buffer = new byte[0x4000];
+
+                while ((count = streamIn.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    streamOut.Write(buffer, 0, count);
+                }
+            }
         }
     }
 }

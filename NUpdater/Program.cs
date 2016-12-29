@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace NUpdater
@@ -18,7 +17,7 @@ namespace NUpdater
         }
 
         [STAThread]
-        static void Main()
+        static void Main(string [] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -27,6 +26,13 @@ namespace NUpdater
             {
                 try
                 {
+                    if (args.Length == 2)
+                    {
+                        updater.ReleaseAssembly(args[0], args[1]);
+
+                        return;
+                    }
+
                     if (PriorProcess(Process.GetCurrentProcess()) != null) return;
 
                     updater.RunApplication();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
@@ -7,30 +8,6 @@ using NUpdater.Transfers;
 
 namespace NUpdater
 {
-    public class DownloadEventArgs : EventArgs
-    {
-        public DeploymentFile File { get; set; }
-    }
-
-    public delegate void DownloadEventHandler(DownloadEventArgs e);
-
-    public class UpdateEventArgs : EventArgs
-    {
-        public DeploymentFile File { get; set; }
-    }
-
-    public delegate void UpdateEventHandler(UpdateEventArgs e);
-
-    public class DownloadProgressEventArgs : EventArgs
-    {
-        public DeploymentFile File { get; set; }
-        public int Index { get; set; }
-        public int Count { get; set; }
-        public float Percent => (float)100.0 * Index / File.Size;
-    }
-
-    public delegate void DownloadProgressEventHandler(DownloadProgressEventArgs e);
-
     public class Deployment
     {
         public static Deployment FromStream(Configuration configuration, Stream stream)
@@ -39,14 +16,36 @@ namespace NUpdater
 
             var transfer = (DeploymentTransfer)serializer.Deserialize(stream);
 
-            var d = new Deployment
+            var d = new Deployment(configuration)
             {
-                Configuration = configuration,
                 Address = new Uri(transfer.Address),
                 Version = new Version(transfer.Version)
             };
 
             d.Files = transfer.Files.Select(s => new DeploymentFile(d, s)).ToList();
+
+            return d;
+        }
+
+        public static Deployment FromAssembly(Configuration configuration, string source, string executable)
+        {
+            var path = Path.Combine(source, executable);
+
+            var fileVersionInfo = FileVersionInfo.GetVersionInfo(path);
+
+            var d = new Deployment(configuration)
+            {
+                Version = new Version(fileVersionInfo.ProductVersion)
+            };
+
+            var baseUri = new Uri(configuration.Address.ToString().Replace("Deployment.xml", string.Empty));
+
+            d.Address = new Uri(baseUri, d.BuildVersion + "/");
+
+            foreach (var file in Directory.EnumerateFiles(source, "*.*", SearchOption.AllDirectories))
+            {
+                d.Files.Add(new DeploymentFile(d, source, file));
+            }
 
             return d;
         }
@@ -117,6 +116,12 @@ namespace NUpdater
         public Uri Address { get; set; }
 
         private List<DeploymentFile> _files;
+
+        public Deployment(Configuration configuration)
+        {
+            Configuration = configuration;
+        }
+
         public List<DeploymentFile> Files
         {
             get { return _files ?? (_files = new List<DeploymentFile>()); }
@@ -137,6 +142,8 @@ namespace NUpdater
         {
             get { return Files.Where(w => w.ShouldDownload()).Sum(s => s.Size); }
         }
+
+        public string BuildVersion => Version.ToString().Replace('.', '_');
 
         public bool UpdateIsPossible()
         {
@@ -170,6 +177,11 @@ namespace NUpdater
                 var transfer = ToTransfer();
 
                 serializer.Serialize(stream, transfer);
+            }
+
+            foreach (var deploymentFile in Files)
+            {
+                deploymentFile.Save();
             }
         }
 

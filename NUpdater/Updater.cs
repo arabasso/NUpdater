@@ -259,5 +259,21 @@ namespace NUpdater
         {
             _notify.Visible = false;
         }
+
+        public void ReleaseAssembly(string source, string executable)
+        {
+            var configuration = Configuration.FromAppSettings();
+
+            var deployment = Deployment.FromAssembly(configuration, source, executable);
+
+            var build = deployment.BuildVersion;
+
+            if (!Directory.Exists(build))
+            {
+                Directory.CreateDirectory(build);
+            }
+
+            deployment.SaveLocal("Deployment.xml");
+        }
     }
 }
