@@ -49,15 +49,20 @@ namespace NUpdater
 
         public bool ShouldUpdate()
         {
+            return !IsValid();
+        }
+
+        public bool IsValid()
+        {
             var localPath = Path.Combine(Deployment.Configuration.Path, Name);
 
-            if (!File.Exists(localPath)) return true;
+            if (!File.Exists(localPath)) return false;
 
             using (var stream = File.OpenRead(localPath))
             {
                 var hash = stream.ToMd5();
 
-                return hash != Hash;
+                return hash == Hash;
             }
         }
 

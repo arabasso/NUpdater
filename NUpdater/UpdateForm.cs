@@ -16,8 +16,6 @@ namespace NUpdater
             _notifyIcon = notifyIcon;
             _updater = updater;
 
-            notifyIcon.DoubleClick += NotifyIconOnDoubleClick;
-
             InitializeComponent();
 
             RegistryConfigurationBindingSource.DataSource = registryConfiguration;
@@ -60,11 +58,6 @@ namespace NUpdater
             Invoke(new Action(() => { DownloadingLabel.Text = string.Format(Properties.Resources.UpdateFileProgress, args.File.Name); }));
         }
 
-        private void NotifyIconOnDoubleClick(object sender, EventArgs eventArgs)
-        {
-            Show();
-        }
-
         private void UpdateWorkerDo(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             _updater.Start();
@@ -76,24 +69,18 @@ namespace NUpdater
                 var result = (DialogResult)Invoke(new Func<DialogResult>(() => MessageBox.Show(this, string.Format(Properties.Resources.RestartApplication,
                         _updater.Deployment.Configuration.Path), Properties.Resources.RestartApplicationTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question)));
 
-                if (result == DialogResult.Yes)
+                if (result == DialogResult.No) return;
+
+                p.CloseMainWindow();
+
+                if (!p.WaitForExit(2000))
                 {
-                    p.CloseMainWindow();
-
-                    if (!p.WaitForExit(2000))
-                    {
-                        p.Kill();
-                        p.WaitForExit();
-                    }
-
-                    _updater.RunApplication();
+                    p.Kill();
+                    p.WaitForExit();
                 }
             }
 
-            else
-            {
-                _updater.RunApplication();
-            }
+            _updater.RunApplication();
         }
 
         private void UpdateWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)

@@ -152,6 +152,16 @@ namespace NUpdater
             return Files.Any(a => a.ShouldUpdate());
         }
 
+        public bool IsValid()
+        {
+            return Files.All(a => a.IsValid() || a.HasTemp);
+        }
+
+        public bool HasTemp()
+        {
+            return Files.All(a => a.HasTemp);
+        }
+
         public bool ShouldDownload()
         {
             return Files.Any(a => a.ShouldDownload());

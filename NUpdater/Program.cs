@@ -51,6 +51,8 @@ namespace NUpdater
                 ContextMenuStrip = NotifyIconContextMenuStrip(),
             };
 
+            notifyIcon.DoubleClick += NotifyIconOnDoubleClick;
+
             var updater = new Updater();
 
             try
@@ -110,7 +112,7 @@ namespace NUpdater
             {
                 var cfg = (RegistryConfiguration) param;
 
-                updater.RunApplication();
+                updater.RunApplication(true);
 
                 if (!updater.ShouldDownload()) return false;
 
@@ -171,6 +173,11 @@ namespace NUpdater
             {
                 _updateForm.Show();
             }
+        }
+
+        private static void NotifyIconOnDoubleClick(object sender, EventArgs eventArgs)
+        {
+            _updateForm.Show();
         }
 
         private static void MenuItemOnClick(object sender, EventArgs eventArgs)

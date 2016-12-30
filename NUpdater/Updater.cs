@@ -91,11 +91,13 @@ namespace NUpdater
             }
         }
 
-        public void RunApplication()
+        public void RunApplication(bool validate = false)
         {
             if (_configuration.HasTempDeploymentPath)
             {
                 var deployment = Deployment.FromTemp(_configuration);
+
+                if (validate && !deployment.IsValid()) return;
 
                 if (deployment.UpdateIsPossible())
                 {
@@ -253,6 +255,11 @@ namespace NUpdater
         public bool ShouldDownload()
         {
             return Deployment.ShouldDownload();
+        }
+
+        public bool IsValid()
+        {
+            return Deployment.IsValid();
         }
 
         public void ReleaseAssembly(string source, string destiny, List<string> excludedFiles)
