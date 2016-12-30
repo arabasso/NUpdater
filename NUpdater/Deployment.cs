@@ -176,7 +176,7 @@ namespace NUpdater
 
         public bool UpdateIsPossible()
         {
-            return !Files.Any(a => a.IsLocked) && !Files.Any(a => a.ShouldDownload());
+            return !Files.Any(a => a.IsLocked) && ShouldUpdate();
         }
 
         public void Update()
