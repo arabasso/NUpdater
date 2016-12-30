@@ -43,7 +43,7 @@ namespace NUpdater
         {
             var message = string.Format(Properties.Resources.NewUpdate, _updater.Deployment.Configuration.Name, _updater.Deployment.Version);
 
-            _notifyIcon.ShowBalloonTip(10000, _updater.Deployment.Configuration.Company, message, ToolTipIcon.Info);
+            _notifyIcon.ShowBalloonTip(2000, _updater.Deployment.Configuration.Company, message, ToolTipIcon.Info);
         }
 
         private void OnUpdaterDownloadProgress(DownloadProgressEventArgs args)
