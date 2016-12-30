@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace NUpdater
@@ -10,6 +12,7 @@ namespace NUpdater
     static class Program
     {
         private static UpdateForm _updateForm;
+        private static BindingSource _registryConfigurationBindingSource;
 
         static Process PriorProcess(Process curr)
         {
@@ -29,28 +32,21 @@ namespace NUpdater
         [STAThread]
         static void Main(string [] args)
         {
+            var registryConfiguration = new RegistryConfiguration();
+
+            _registryConfigurationBindingSource = new BindingSource
+            {
+                DataSource = registryConfiguration
+            };
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
-            var menuItemRestore = new ToolStripMenuItem(Properties.Resources.MenuItemRestore);
-
-            menuItemRestore.Click += MenuItemRestoreOnClick;
-
-            var menuItemClose = new ToolStripMenuItem(Properties.Resources.MenuItemClose);
-
-            menuItemClose.Click += MenuItemOnClick;
-
-            var contextMenuStrip = new ContextMenuStrip();
-
-            contextMenuStrip.Items.Add(menuItemRestore);
-            contextMenuStrip.Items.Add(new ToolStripSeparator());
-            contextMenuStrip.Items.Add(menuItemClose);
 
             var notifyIcon = new NotifyIcon
             {
                 Visible = true,
                 Icon = Properties.Resources.Icon_ico,
-                ContextMenuStrip = contextMenuStrip,
+                ContextMenuStrip = NotifyIconContextMenuStrip(),
             };
 
             var updater = new Updater();
@@ -85,13 +81,12 @@ namespace NUpdater
 
                 if (PriorProcess(Process.GetCurrentProcess()) != null) return;
 
-                updater.RunApplication();
+                var task = Run(updater, notifyIcon, registryConfiguration);
 
-                if (!updater.ShouldDownload()) return;
-
-                _updateForm = new UpdateForm(notifyIcon, updater);
-
-                Application.Run(_updateForm);
+                if (task.Result)
+                {
+                    Application.Run();
+                }
             }
 
             catch (Exception ex)
@@ -102,7 +97,57 @@ namespace NUpdater
             finally
             {
                 notifyIcon.Visible = false;
+
+                registryConfiguration.Dispose();
             }
+        }
+
+        private static Task<bool> Run(Updater updater, NotifyIcon notifyIcon, RegistryConfiguration registryConfiguration)
+        {
+            return Task.Factory.StartNew(param =>
+            {
+                var cfg = (RegistryConfiguration) param;
+
+                updater.RunApplication();
+
+                if (!updater.ShouldDownload()) return false;
+
+                _updateForm = new UpdateForm(cfg, notifyIcon, updater)
+                {
+                    Visible = !cfg.StartMinimized
+                };
+
+                return true;
+            }, registryConfiguration, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.FromCurrentSynchronizationContext());
+        }
+
+        private static ContextMenuStrip NotifyIconContextMenuStrip()
+        {
+            var menuItemRestore = new ToolStripMenuItem(Properties.Resources.MenuItemRestore);
+
+            menuItemRestore.Click += MenuItemRestoreOnClick;
+
+            var menuItemClose = new ToolStripMenuItem(Properties.Resources.MenuItemClose);
+
+            menuItemClose.Click += MenuItemOnClick;
+
+            var menuItemStartMinimized = new BindableToolStripMenuItem(Properties.Resources.MenuItemStartMinimized)
+            {
+                CheckOnClick = true
+            };
+
+            menuItemStartMinimized.DataBindings.Add(new Binding("Checked", _registryConfigurationBindingSource, "StartMinimized",
+                true, DataSourceUpdateMode.OnPropertyChanged));
+
+            var contextMenuStrip = new ContextMenuStrip();
+
+            contextMenuStrip.Items.Add(menuItemRestore);
+            contextMenuStrip.Items.Add(new ToolStripSeparator());
+            contextMenuStrip.Items.Add(menuItemStartMinimized);
+            contextMenuStrip.Items.Add(new ToolStripSeparator());
+            contextMenuStrip.Items.Add(menuItemClose);
+
+            return contextMenuStrip;
         }
 
         private static void MenuItemRestoreOnClick(object sender, EventArgs eventArgs)

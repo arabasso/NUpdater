@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UpdateForm));
             this.UpdatingAppLabel = new System.Windows.Forms.Label();
             this.UpdatingMessageLabel = new System.Windows.Forms.Label();
@@ -38,8 +39,11 @@
             this.progressBar2 = new System.Windows.Forms.ProgressBar();
             this.DownloadingLabel = new System.Windows.Forms.Label();
             this.UpdateWorker = new System.ComponentModel.BackgroundWorker();
+            this.StartMinimizedCheckBox = new System.Windows.Forms.CheckBox();
+            this.RegistryConfigurationBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RegistryConfigurationBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // UpdatingAppLabel
@@ -128,11 +132,30 @@
             this.UpdateWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.UpdateWorkerProgressChanged);
             this.UpdateWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.UpdateWorkerCompleted);
             // 
+            // StartMinimizedCheckBox
+            // 
+            this.StartMinimizedCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.StartMinimizedCheckBox.AutoSize = true;
+            this.StartMinimizedCheckBox.DataBindings.Add(new System.Windows.Forms.Binding("Checked", this.RegistryConfigurationBindingSource, "StartMinimized", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.StartMinimizedCheckBox.Location = new System.Drawing.Point(389, 225);
+            this.StartMinimizedCheckBox.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
+            this.StartMinimizedCheckBox.Name = "StartMinimizedCheckBox";
+            this.StartMinimizedCheckBox.Size = new System.Drawing.Size(96, 17);
+            this.StartMinimizedCheckBox.TabIndex = 5;
+            this.StartMinimizedCheckBox.Text = "Start minimized";
+            this.StartMinimizedCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // RegistryConfigurationBindingSource
+            // 
+            this.RegistryConfigurationBindingSource.AllowNew = false;
+            this.RegistryConfigurationBindingSource.DataSource = typeof(NUpdater.RegistryConfiguration);
+            // 
             // UpdateForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(497, 224);
+            this.ClientSize = new System.Drawing.Size(497, 250);
+            this.Controls.Add(this.StartMinimizedCheckBox);
             this.Controls.Add(this.DownloadingLabel);
             this.Controls.Add(this.progressBar2);
             this.Controls.Add(this.TotalProgressLabel);
@@ -149,6 +172,7 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RegistryConfigurationBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -164,5 +188,7 @@
         private System.Windows.Forms.ProgressBar progressBar2;
         private System.Windows.Forms.Label DownloadingLabel;
         private System.ComponentModel.BackgroundWorker UpdateWorker;
+        private System.Windows.Forms.CheckBox StartMinimizedCheckBox;
+        public System.Windows.Forms.BindingSource RegistryConfigurationBindingSource;
     }
 }

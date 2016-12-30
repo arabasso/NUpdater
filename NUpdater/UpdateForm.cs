@@ -11,7 +11,7 @@ namespace NUpdater
         private readonly long _totalDownload;
         private long _indexDownload;
 
-        public UpdateForm(NotifyIcon notifyIcon, Updater updater)
+        public UpdateForm(RegistryConfiguration registryConfiguration, NotifyIcon notifyIcon, Updater updater)
         {
             _notifyIcon = notifyIcon;
             _updater = updater;
@@ -20,11 +20,15 @@ namespace NUpdater
 
             InitializeComponent();
 
+            RegistryConfigurationBindingSource.DataSource = registryConfiguration;
+
             Text = _updater.Deployment.Configuration.Company + @" - " + string.Format(Properties.Resources.AppUpdate, _updater.Deployment.Configuration.Name);
             UpdatingAppLabel.Text = string.Format(Properties.Resources.AppUpdate, _updater.Deployment.Configuration.Name) + @" (" + _updater.Deployment.Version + @")";
             UpdatingMessageLabel.Text = Properties.Resources.UpdateMessage;
             DownloadingLabel.Text = string.Format(Properties.Resources.DownloadFileProgress, "");
             TotalProgressLabel.Text = Properties.Resources.TotalProgress;
+            StartMinimizedCheckBox.Text = Properties.Resources.MenuItemStartMinimized;
+            StartMinimizedCheckBox.Checked = registryConfiguration.StartMinimized;
 
             _updater.StartUpdate += OnUpdaterStart;
             _updater.StartDownload += OnUpdaterStartDownload;
@@ -105,10 +109,10 @@ namespace NUpdater
 
             Interlocked.Add(ref _indexDownload, args.Count);
 
-            var step = (int)(100.0*_indexDownload/_totalDownload);
+            var step = (100.0*_indexDownload/_totalDownload);
 
-            progressBar2.Value = step;
-            _notifyIcon.Text = string.Format(Properties.Resources.UpdateFileProgress, step + "%");
+            progressBar2.Value = (int)step;
+            _notifyIcon.Text = string.Format(Properties.Resources.UpdateFileProgress, step.ToString("F1") + "%");
         }
 
         private void UpdateFormLoad(object sender, EventArgs e)

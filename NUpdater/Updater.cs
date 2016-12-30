@@ -4,9 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace NUpdater
 {
@@ -96,9 +93,9 @@ namespace NUpdater
 
         public void RunApplication()
         {
-            if (_configuration.HasLocalDeploymentPath)
+            if (_configuration.HasTempDeploymentPath)
             {
-                var deployment = Deployment.FromCache(_configuration);
+                var deployment = Deployment.FromTemp(_configuration);
 
                 if (deployment.UpdateIsPossible())
                 {
@@ -217,7 +214,11 @@ namespace NUpdater
 
         public void DeleteTemp()
         {
-            foreach (var file in Directory.EnumerateFiles(_configuration.TempDir, "*.*", SearchOption.AllDirectories))
+            var files = Directory
+                .EnumerateFiles(_configuration.TempDir, "*.*", SearchOption.AllDirectories)
+                .Where(file => file != _configuration.TempDeploymentPath);
+
+            foreach (var file in files)
             {
                 try
                 {
@@ -267,7 +268,7 @@ namespace NUpdater
                 Directory.CreateDirectory(build);
             }
 
-            deployment.SaveTemp(Path.Combine(destiny, "Deployment.xml"));
+            deployment.Save(Path.Combine(destiny, "Deployment.xml"));
         }
     }
 }

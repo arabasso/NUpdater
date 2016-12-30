@@ -136,6 +136,9 @@
   <data name="MenuItemRestore" xml:space="preserve">
     <value>&amp;Restaurar</value>
   </data>
+  <data name="MenuItemStartMinimized" xml:space="preserve">
+    <value>Iniciar minimizado</value>
+  </data>
   <data name="NewUpdate" xml:space="preserve">
     <value>Nova atualização do {0} ({1})</value>
   </data>

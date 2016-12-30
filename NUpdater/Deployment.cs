@@ -69,9 +69,9 @@ namespace NUpdater
                 .Any(excludedPath => string.Compare(file, excludedPath, StringComparison.CurrentCultureIgnoreCase) == 0);
         }
 
-        public static Deployment FromCache(Configuration configuration)
+        public static Deployment FromTemp(Configuration configuration)
         {
-            using (var stream = File.OpenRead(configuration.LocalDeploymentPath))
+            using (var stream = File.OpenRead(configuration.TempDeploymentPath))
             {
                 return FromStream(configuration, stream);
             }
@@ -187,9 +187,14 @@ namespace NUpdater
             };
         }
 
-        public void SaveTemp(string file)
+        public void Save(string file)
         {
-            var directory = Path.GetDirectoryName(file) ?? ".";
+            var directory = Path.GetDirectoryName(file);
+
+            if (directory != null && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
 
             using (var stream = File.OpenWrite(file))
             {
@@ -210,12 +215,7 @@ namespace NUpdater
 
         public void SaveTemp()
         {
-            if (!Configuration.HasTempDir)
-            {
-                Directory.CreateDirectory(Configuration.TempDir);
-            }
-
-            SaveTemp(Configuration.LocalDeploymentPath);
+            Save(Configuration.TempDeploymentPath);
         }
     }
 }

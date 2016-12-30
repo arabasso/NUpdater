@@ -88,8 +88,7 @@ namespace NUpdater
         }
 
         public string ApplicationPath => System.IO.Path.Combine(Path, Executable);
-        public string LocalDeploymentPath => System.IO.Path.Combine(TempDir, "Deployment.xml");
-        public Icon ApplicationIcon => Icon.ExtractAssociatedIcon(ApplicationPath);
-        public bool HasLocalDeploymentPath => File.Exists(LocalDeploymentPath);
+        public string TempDeploymentPath => System.IO.Path.Combine(TempDir, "Deployment.xml");
+        public bool HasTempDeploymentPath => File.Exists(TempDeploymentPath);
     }
 }

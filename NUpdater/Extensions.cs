@@ -42,7 +42,7 @@ namespace NUpdater
 
         public static void ShowBalloonTip(this NotifyIcon notifyIcon, Exception exception)
         {
-            notifyIcon.ShowBalloonTip(10000, "", exception.Message, ToolTipIcon.Error);
+            notifyIcon.ShowBalloonTip(2000, "", exception.Message, ToolTipIcon.Error);
         }
     }
 }

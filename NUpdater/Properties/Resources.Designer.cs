@@ -117,6 +117,15 @@ namespace NUpdater.Properties {
         }
         
         /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Iniciar minimizado.
+        /// </summary>
+        internal static string MenuItemStartMinimized {
+            get {
+                return ResourceManager.GetString("MenuItemStartMinimized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Consulta uma cadeia de caracteres localizada semelhante a Nova atualização do {0} ({1}).
         /// </summary>
         internal static string NewUpdate {
