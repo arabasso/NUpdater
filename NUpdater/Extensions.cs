@@ -2,6 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace NUpdater
@@ -43,6 +44,14 @@ namespace NUpdater
         public static void ShowBalloonTip(this NotifyIcon notifyIcon, Exception exception)
         {
             notifyIcon.ShowBalloonTip(2000, "", exception.Message, ToolTipIcon.Error);
+        }
+
+        public static bool Like(this string str, string pattern)
+        {
+            return new Regex(
+                "^" + Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", ".") + "$",
+                RegexOptions.IgnoreCase | RegexOptions.Singleline
+            ).IsMatch(str);
         }
     }
 }

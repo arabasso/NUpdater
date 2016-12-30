@@ -61,12 +61,6 @@ namespace NUpdater.Test
         }
 
         [Test]
-        public void Update_is_possible()
-        {
-            Assert.That(_deployment.UpdateIsPossible(), Is.True);
-        }
-
-        [Test]
         public void Not_update_is_possible()
         {
             var firstFile = _deployment.Files.First();
@@ -141,10 +135,13 @@ namespace NUpdater.Test
             Assert.That(d.Files[2].Hash, Is.EqualTo("8458173506da806f2a7b5916177ddebf"));
         }
 
-        [Test]
-        public void From_assembly_excluded_files()
+        [TestCase(@"Source\Program.cs")]
+        [TestCase(@"*.cs")]
+        [TestCase(@"Source\Program.*")]
+        [TestCase(@"Source\Program.*")]
+        public void From_assembly_excluded_files(string wildcard)
         {
-            var excludedList = new List<string> { @"Source\Program.cs" };
+            var excludedList = new List<string> { wildcard };
 
             var d = Deployment.FromAssembly(_configuration, "App", excludedList);
 

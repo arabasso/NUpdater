@@ -54,7 +54,11 @@ namespace NUpdater
 
             d.Address = new Uri(baseUri, d.BuildVersion + "/");
 
-            foreach (var file in Directory.EnumerateFiles(source, "*.*", SearchOption.AllDirectories).Where(w => !IsExcludedFile(source, w, excludedList) && !ExcludedExtensions.Any(w.EndsWith)))
+            var files = Directory
+                .EnumerateFiles(source, "*.*", SearchOption.AllDirectories)
+                .Where(w => !IsExcluded(source, w, excludedList) && !ExcludedExtensions.Any(w.EndsWith));
+
+            foreach (var file in files)
             {
                 d.Files.Add(new DeploymentFile(d, source, file));
             }
@@ -62,11 +66,11 @@ namespace NUpdater
             return d;
         }
 
-        private static bool IsExcludedFile(string source, string file, List<string> excludedList)
+        private static bool IsExcluded(string source, string file, List<string> excludedList)
         {
             return excludedList
-                .Select(excludedFile => Path.Combine(source, excludedFile))
-                .Any(excludedPath => string.Compare(file, excludedPath, StringComparison.CurrentCultureIgnoreCase) == 0);
+                .Select(s => Path.Combine(source, s))
+                .Any(file.Like);
         }
 
         public static Deployment FromTemp(Configuration configuration)
