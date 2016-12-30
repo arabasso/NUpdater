@@ -28,4 +28,11 @@ namespace NUpdater
     }
 
     public delegate void DownloadProgressEventHandler(DownloadProgressEventArgs e);
+
+    public class ExceptionEventArgs : EventArgs
+    {
+        public Exception Exception { get; set; }
+    }
+
+    public delegate void UpdateExceptionEventHandler(ExceptionEventArgs e);
 }

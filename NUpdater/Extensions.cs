@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Windows.Forms;
 
 namespace NUpdater
 {
@@ -36,6 +38,11 @@ namespace NUpdater
             }
 
             return sBuilder.ToString();
+        }
+
+        public static void ShowBalloonTip(this NotifyIcon notifyIcon, Exception exception)
+        {
+            notifyIcon.ShowBalloonTip(10000, "", exception.Message, ToolTipIcon.Error);
         }
     }
 }

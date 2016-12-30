@@ -30,49 +30,59 @@ namespace NUpdater
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            using (var updater = new Updater())
+            var notifyIcon = new NotifyIcon
             {
-                try
+                Visible = true,
+                Icon = Properties.Resources.Icon_ico
+            };
+
+            var updater = new Updater();
+
+            try
+            {
+                if (args.Length >= 1)
                 {
-                    if (args.Length >= 1)
+                    if (!AttachConsole(-1))
                     {
-                        if (!AttachConsole(-1))
-                        {
-                            AllocConsole();
-                        }
-
-                        var source = args[0];
-                        var destiny = ".";
-                        var excludedFiles = new List<string>();
-
-                        if (args.Length >= 2)
-                        {
-                            destiny = args[1];
-                        }
-
-                        if (args.Length >= 3)
-                        {
-                            excludedFiles.AddRange(args[2].Split(new [] { ";" }, StringSplitOptions.RemoveEmptyEntries));
-                        }
-
-                        updater.ReleaseAssembly(source, destiny, excludedFiles);
-
-                        return;
+                        AllocConsole();
                     }
 
-                    if (PriorProcess(Process.GetCurrentProcess()) != null) return;
+                    var source = args[0];
+                    var destiny = ".";
+                    var excludedFiles = new List<string>();
 
-                    updater.RunApplication();
+                    if (args.Length >= 2)
+                    {
+                        destiny = args[1];
+                    }
 
-                    if (!updater.ShouldDownload()) return;
+                    if (args.Length >= 3)
+                    {
+                        excludedFiles.AddRange(args[2].Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries));
+                    }
 
-                    Application.Run(new UpdateForm(updater));
+                    updater.ReleaseAssembly(source, destiny, excludedFiles);
+
+                    return;
                 }
 
-                catch (Exception ex)
-                {
-                    updater.Log(ex);
-                }
+                if (PriorProcess(Process.GetCurrentProcess()) != null) return;
+
+                updater.RunApplication();
+
+                if (!updater.ShouldDownload()) return;
+
+                Application.Run(new UpdateForm(notifyIcon, updater));
+            }
+
+            catch (Exception ex)
+            {
+                notifyIcon.ShowBalloonTip(ex);
+            }
+
+            finally
+            {
+                notifyIcon.Visible = false;
             }
         }
     }

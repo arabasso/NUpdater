@@ -5,10 +5,12 @@ namespace NUpdater
 {
     public partial class UpdateForm : Form
     {
+        private readonly NotifyIcon _notifyIcon;
         private readonly Updater _updater;
 
-        public UpdateForm(Updater updater)
+        public UpdateForm(NotifyIcon notifyIcon, Updater updater)
         {
+            _notifyIcon = notifyIcon;
             _updater = updater;
 
             InitializeComponent();
@@ -19,6 +21,12 @@ namespace NUpdater
             DownloadingLabel.Text = string.Format(Properties.Resources.DownloadFileProgress, "");
             TotalProgressLabel.Text = Properties.Resources.TotalProgress;
 
+            _updater.StartUpdate += (sender, args) =>
+            {
+                var message = string.Format(Properties.Resources.NewUpdate, _updater.Deployment.Configuration.Name, _updater.Deployment.Version);
+
+                _notifyIcon.ShowBalloonTip(10000, _updater.Deployment.Configuration.Company, message, ToolTipIcon.Info);
+            };
             _updater.StartDownload += args =>
             {
                 Invoke(new Action(() =>

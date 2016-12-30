@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace NUpdater
 {
-    public class Updater : IDisposable
+    public class Updater
     {
         private readonly Configuration _configuration;
         private Deployment _deployment;
@@ -18,17 +18,10 @@ namespace NUpdater
         public Deployment Deployment => _deployment ?? (_deployment = Deployment.FromUri(_configuration));
 
         private long? _totalDownload;
-        private readonly NotifyIcon _notify;
         public long TotalDownload => _totalDownload ?? (long)(_totalDownload = Deployment.TotalDownload);
 
         public Updater()
         {
-            _notify = new NotifyIcon
-            {
-                Visible = true,
-                Icon = Properties.Resources.Icon_ico
-            };
-
             _configuration = Configuration.FromAppSettings();
         }
 
@@ -60,15 +53,27 @@ namespace NUpdater
             UpdateFile?.Invoke(args);
         }
 
+        public event EventHandler StartUpdate;
+
+        protected void OnStartUpdate(EventArgs args)
+        {
+            StartUpdate?.Invoke(this, args);
+        }
+
+        public event UpdateExceptionEventHandler UpdateException;
+
+        protected void OnUpdateException(ExceptionEventArgs args)
+        {
+            UpdateException?.Invoke(args);
+        }
+
         public void Start()
         {
             try
             {
-                Deployment.SaveLocal();
+                Deployment.SaveTemp();
 
-                var message = string.Format(Properties.Resources.NewUpdate, _configuration.Name, Deployment.Version);
-
-                _notify.ShowBalloonTip(10000, Deployment.Configuration.Company, message, ToolTipIcon.Info);
+                OnStartUpdate(new EventArgs());
 
                 Deployment.DownloadProgress += OnDownloadProgress;
                 Deployment.StartDownload += OnStartDownload;
@@ -82,12 +87,10 @@ namespace NUpdater
 
             catch (Exception ex)
             {
-                Log(ex);
-            }
-
-            finally
-            {
-                _notify.Visible = false;
+                OnUpdateException(new ExceptionEventArgs
+                {
+                    Exception = ex
+                });
             }
         }
 
@@ -251,16 +254,6 @@ namespace NUpdater
             return Deployment.ShouldDownload();
         }
 
-        public void Log(Exception exception)
-        {
-            _notify.ShowBalloonTip(10000, "", exception.Message, ToolTipIcon.Error);
-        }
-
-        public void Dispose()
-        {
-            _notify.Visible = false;
-        }
-
         public void ReleaseAssembly(string source, string destiny, List<string> excludedFiles)
         {
             var configuration = Configuration.FromAppSettings();
@@ -274,7 +267,7 @@ namespace NUpdater
                 Directory.CreateDirectory(build);
             }
 
-            deployment.SaveLocal(Path.Combine(destiny, "Deployment.xml"));
+            deployment.SaveTemp(Path.Combine(destiny, "Deployment.xml"));
         }
     }
 }

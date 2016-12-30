@@ -187,7 +187,7 @@ namespace NUpdater
             };
         }
 
-        public void SaveLocal(string file)
+        public void SaveTemp(string file)
         {
             var directory = Path.GetDirectoryName(file) ?? ".";
 
@@ -208,14 +208,14 @@ namespace NUpdater
             }
         }
 
-        public void SaveLocal()
+        public void SaveTemp()
         {
             if (!Configuration.HasTempDir)
             {
                 Directory.CreateDirectory(Configuration.TempDir);
             }
 
-            SaveLocal(Configuration.LocalDeploymentPath);
+            SaveTemp(Configuration.LocalDeploymentPath);
         }
     }
 }
