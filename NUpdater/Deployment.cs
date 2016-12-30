@@ -28,17 +28,17 @@ namespace NUpdater
         }
 
         private static readonly List<string>
-            ExcludedExtensions = new List<string>
+            ExcludedList = new List<string>
             {
-                ".pdb", ".vshost.exe", ".vshost.exe.config", ".vshost.exe.manifest",
-                ".pssym"
+                "*.pdb", "*.vshost.exe", "*.vshost.exe.config", "*.vshost.exe.manifest",
+                "*.pssym"
             };
 
         public static Deployment FromAssembly(Configuration configuration, string source, List<string> excludedList = null)
         {
-            if (excludedList == null)
+            if (excludedList != null)
             {
-                excludedList = new List<string>();
+                ExcludedList.AddRange(excludedList);
             }
 
             var path = Path.Combine(source, configuration.Executable);
@@ -56,7 +56,7 @@ namespace NUpdater
 
             var files = Directory
                 .EnumerateFiles(source, "*.*", SearchOption.AllDirectories)
-                .Where(w => !IsExcluded(source, w, excludedList) && !ExcludedExtensions.Any(w.EndsWith));
+                .Where(w => !IsExcluded(source, w, ExcludedList));
 
             foreach (var file in files)
             {
