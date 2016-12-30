@@ -193,11 +193,11 @@ namespace NUpdater
             };
         }
 
-        public void Save()
+        public void Save(string destiny)
         {
             if (!_deploy && _fileInfo == null) return;
 
-            var file = Path.Combine(Deployment.BuildVersion, Name) + @".deploy";
+            var file = Path.Combine(destiny, Deployment.BuildVersion, Name) + @".deploy";
 
             var dir = Path.GetDirectoryName(file);
 

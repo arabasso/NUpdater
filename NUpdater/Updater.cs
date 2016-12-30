@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -260,20 +261,20 @@ namespace NUpdater
             _notify.Visible = false;
         }
 
-        public void ReleaseAssembly(string source, string executable)
+        public void ReleaseAssembly(string source, string destiny, List<string> excludedFiles)
         {
             var configuration = Configuration.FromAppSettings();
 
-            var deployment = Deployment.FromAssembly(configuration, source, executable);
+            var deployment = Deployment.FromAssembly(configuration, source, excludedFiles);
 
-            var build = deployment.BuildVersion;
+            var build = Path.Combine(destiny, deployment.BuildVersion);
 
             if (!Directory.Exists(build))
             {
                 Directory.CreateDirectory(build);
             }
 
-            deployment.SaveLocal("Deployment.xml");
+            deployment.SaveLocal(Path.Combine(destiny, "Deployment.xml"));
         }
     }
 }

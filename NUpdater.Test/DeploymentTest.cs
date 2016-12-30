@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -81,7 +82,7 @@ namespace NUpdater.Test
         [Test]
         public void From_assembly_check_version()
         {
-            var d = Deployment.FromAssembly(_configuration, "App", "App.exe");
+            var d = Deployment.FromAssembly(_configuration, "App");
 
             Assert.That(d.Version, Is.EqualTo(new Version("1.0.0.0")));
         }
@@ -89,7 +90,7 @@ namespace NUpdater.Test
         [Test]
         public void From_assembly_check_version_build()
         {
-            var d = Deployment.FromAssembly(_configuration, "App", "App.exe");
+            var d = Deployment.FromAssembly(_configuration, "App");
 
             Assert.That(d.BuildVersion, Is.EqualTo("1_0_0_0"));
         }
@@ -97,7 +98,7 @@ namespace NUpdater.Test
         [Test]
         public void From_assembly_check_address()
         {
-            var d = Deployment.FromAssembly(_configuration, "App", "App.exe");
+            var d = Deployment.FromAssembly(_configuration, "App");
 
             Assert.That(d.Address, Is.EqualTo(new Uri("http://localhost:1234/App/1_0_0_0/")));
         }
@@ -105,7 +106,7 @@ namespace NUpdater.Test
         [Test]
         public void From_assembly_check_file_count()
         {
-            var d = Deployment.FromAssembly(_configuration, "App", "App.exe");
+            var d = Deployment.FromAssembly(_configuration, "App");
 
             Assert.That(d.Files, Has.Count.EqualTo(3));
         }
@@ -113,7 +114,7 @@ namespace NUpdater.Test
         [Test]
         public void From_assembly_check_file_names()
         {
-            var d = Deployment.FromAssembly(_configuration, "App", "App.exe");
+            var d = Deployment.FromAssembly(_configuration, "App");
 
             Assert.That(d.Files[0].Name, Is.EqualTo("App.exe"));
             Assert.That(d.Files[1].Name, Is.EqualTo("App.exe.config"));
@@ -123,7 +124,7 @@ namespace NUpdater.Test
         [Test]
         public void From_assembly_check_file_sizes()
         {
-            var d = Deployment.FromAssembly(_configuration, "App", "App.exe");
+            var d = Deployment.FromAssembly(_configuration, "App");
 
             Assert.That(d.Files[0].Size, Is.EqualTo(4608));
             Assert.That(d.Files[1].Size, Is.EqualTo(77));
@@ -133,11 +134,37 @@ namespace NUpdater.Test
         [Test]
         public void From_assembly_check_file_hashes()
         {
-            var d = Deployment.FromAssembly(_configuration, "App", "App.exe");
+            var d = Deployment.FromAssembly(_configuration, "App");
 
             Assert.That(d.Files[0].Hash, Is.EqualTo("32fe50ad52b26d8afad1e26d8af2a614"));
             Assert.That(d.Files[1].Hash, Is.EqualTo("feb8a12f54cdbca11133449147e40b28"));
             Assert.That(d.Files[2].Hash, Is.EqualTo("8458173506da806f2a7b5916177ddebf"));
+        }
+
+        [Test]
+        public void From_assembly_excluded_files()
+        {
+            var excludedList = new List<string> { @"Source\Program.cs" };
+
+            var d = Deployment.FromAssembly(_configuration, "App", excludedList);
+
+            Assert.That(d.Files, Has.Count.EqualTo(2));
+        }
+
+        [TestCase(@"App\App.vshost.exe")]
+        [TestCase(@"App\App.vshost.exe.config")]
+        [TestCase(@"App\App.vshost.exe.manifest")]
+        public void From_assembly_excluded_extension(string file)
+        {
+            using (File.OpenWrite(file))
+            {
+            }
+
+            var d = Deployment.FromAssembly(_configuration, "App");
+
+            Assert.That(d.Files, Has.Count.EqualTo(3));
+
+            File.Delete(file);
         }
     }
 }

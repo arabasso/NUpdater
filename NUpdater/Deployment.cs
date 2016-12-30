@@ -27,9 +27,21 @@ namespace NUpdater
             return d;
         }
 
-        public static Deployment FromAssembly(Configuration configuration, string source, string executable)
+        private static readonly List<string>
+            ExcludedExtensions = new List<string>
+            {
+                ".pdb", ".vshost.exe", ".vshost.exe.config", ".vshost.exe.manifest",
+                ".pssym"
+            };
+
+        public static Deployment FromAssembly(Configuration configuration, string source, List<string> excludedList = null)
         {
-            var path = Path.Combine(source, executable);
+            if (excludedList == null)
+            {
+                excludedList = new List<string>();
+            }
+
+            var path = Path.Combine(source, configuration.Executable);
 
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(path);
 
@@ -42,12 +54,19 @@ namespace NUpdater
 
             d.Address = new Uri(baseUri, d.BuildVersion + "/");
 
-            foreach (var file in Directory.EnumerateFiles(source, "*.*", SearchOption.AllDirectories))
+            foreach (var file in Directory.EnumerateFiles(source, "*.*", SearchOption.AllDirectories).Where(w => !IsExcludedFile(source, w, excludedList) && !ExcludedExtensions.Any(w.EndsWith)))
             {
                 d.Files.Add(new DeploymentFile(d, source, file));
             }
 
             return d;
+        }
+
+        private static bool IsExcludedFile(string source, string file, List<string> excludedList)
+        {
+            return excludedList
+                .Select(excludedFile => Path.Combine(source, excludedFile))
+                .Any(excludedPath => string.Compare(file, excludedPath, StringComparison.CurrentCultureIgnoreCase) == 0);
         }
 
         public static Deployment FromCache(Configuration configuration)
@@ -170,6 +189,8 @@ namespace NUpdater
 
         public void SaveLocal(string file)
         {
+            var directory = Path.GetDirectoryName(file) ?? ".";
+
             using (var stream = File.OpenWrite(file))
             {
                 var serializer = new XmlSerializer(typeof(DeploymentTransfer));
@@ -181,7 +202,9 @@ namespace NUpdater
 
             foreach (var deploymentFile in Files)
             {
-                deploymentFile.Save();
+                Console.WriteLine(@"Deploying {0}", deploymentFile.Name);
+
+                deploymentFile.Save(directory);
             }
         }
 

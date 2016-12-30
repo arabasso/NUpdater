@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace NUpdater
@@ -16,6 +18,12 @@ namespace NUpdater
             return procs.FirstOrDefault(p => (p.SessionId == currentSessionId) && (p.Id != curr.Id) && (p.MainModule.FileName == curr.MainModule.FileName));
         }
 
+        [DllImport("kernel32.dll")]
+        private static extern bool AllocConsole();
+
+        [DllImport("kernel32.dll")]
+        private static extern bool AttachConsole(int pid);
+
         [STAThread]
         static void Main(string [] args)
         {
@@ -26,9 +34,28 @@ namespace NUpdater
             {
                 try
                 {
-                    if (args.Length == 2)
+                    if (args.Length >= 1)
                     {
-                        updater.ReleaseAssembly(args[0], args[1]);
+                        if (!AttachConsole(-1))
+                        {
+                            AllocConsole();
+                        }
+
+                        var source = args[0];
+                        var destiny = ".";
+                        var excludedFiles = new List<string>();
+
+                        if (args.Length >= 2)
+                        {
+                            destiny = args[1];
+                        }
+
+                        if (args.Length >= 3)
+                        {
+                            excludedFiles.AddRange(args[2].Split(new [] { ";" }, StringSplitOptions.RemoveEmptyEntries));
+                        }
+
+                        updater.ReleaseAssembly(source, destiny, excludedFiles);
 
                         return;
                     }
