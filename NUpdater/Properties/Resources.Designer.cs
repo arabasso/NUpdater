@@ -99,6 +99,24 @@ namespace NUpdater.Properties {
         }
         
         /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a &amp;Sair.
+        /// </summary>
+        internal static string MenuItemClose {
+            get {
+                return ResourceManager.GetString("MenuItemClose", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a &amp;Restaurar.
+        /// </summary>
+        internal static string MenuItemRestore {
+            get {
+                return ResourceManager.GetString("MenuItemRestore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Consulta uma cadeia de caracteres localizada semelhante a Nova atualização do {0} ({1}).
         /// </summary>
         internal static string NewUpdate {

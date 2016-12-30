@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace NUpdater
@@ -7,11 +8,15 @@ namespace NUpdater
     {
         private readonly NotifyIcon _notifyIcon;
         private readonly Updater _updater;
+        private readonly long _totalDownload;
+        private long _indexDownload;
 
         public UpdateForm(NotifyIcon notifyIcon, Updater updater)
         {
             _notifyIcon = notifyIcon;
             _updater = updater;
+
+            notifyIcon.DoubleClick += NotifyIconOnDoubleClick;
 
             InitializeComponent();
 
@@ -21,36 +26,39 @@ namespace NUpdater
             DownloadingLabel.Text = string.Format(Properties.Resources.DownloadFileProgress, "");
             TotalProgressLabel.Text = Properties.Resources.TotalProgress;
 
-            _updater.StartUpdate += (sender, args) =>
-            {
-                var message = string.Format(Properties.Resources.NewUpdate, _updater.Deployment.Configuration.Name, _updater.Deployment.Version);
+            _updater.StartUpdate += OnUpdaterStart;
+            _updater.StartDownload += OnUpdaterStartDownload;
+            _updater.DownloadProgress += OnUpdaterDownloadProgress;
+            _updater.UpdateFile += OnUpdateFile;
 
-                _notifyIcon.ShowBalloonTip(10000, _updater.Deployment.Configuration.Company, message, ToolTipIcon.Info);
-            };
-            _updater.StartDownload += args =>
-            {
-                Invoke(new Action(() =>
-                {
-                    DownloadingLabel.Text = string.Format(Properties.Resources.DownloadFileProgress, args.File.Name);
-                }));
-            };
-            _updater.DownloadProgress += args => UpdateWorker.ReportProgress((int)args.Percent, args);
-            _updater.UpdateFile += args =>
-            {
-                Invoke(new Action(() =>
-                {
-                    DownloadingLabel.Text = string.Format(Properties.Resources.UpdateFileProgress, args.File.Name);
-                }));
-            };
-
-            progressBar2.Maximum = (int)_updater.TotalDownload;
+            _totalDownload = _updater.TotalDownload;
         }
 
-        protected override void OnLoad(EventArgs e)
+        private void OnUpdaterStartDownload(DownloadEventArgs args)
         {
-            base.OnLoad(e);
+            Invoke(new Action(() => { DownloadingLabel.Text = string.Format(Properties.Resources.DownloadFileProgress, args.File.Name); }));
+        }
 
-            UpdateWorker.RunWorkerAsync();
+        private void OnUpdaterStart(object sender, EventArgs args)
+        {
+            var message = string.Format(Properties.Resources.NewUpdate, _updater.Deployment.Configuration.Name, _updater.Deployment.Version);
+
+            _notifyIcon.ShowBalloonTip(10000, _updater.Deployment.Configuration.Company, message, ToolTipIcon.Info);
+        }
+
+        private void OnUpdaterDownloadProgress(DownloadProgressEventArgs args)
+        {
+            UpdateWorker.ReportProgress((int) args.Percent, args);
+        }
+
+        private void OnUpdateFile(UpdateEventArgs args)
+        {
+            Invoke(new Action(() => { DownloadingLabel.Text = string.Format(Properties.Resources.UpdateFileProgress, args.File.Name); }));
+        }
+
+        private void NotifyIconOnDoubleClick(object sender, EventArgs eventArgs)
+        {
+            Show();
         }
 
         private void UpdateWorkerDo(object sender, System.ComponentModel.DoWorkEventArgs e)
@@ -86,7 +94,7 @@ namespace NUpdater
 
         private void UpdateWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
-            Close();
+            Application.Exit();
         }
 
         private void UpdateWorkerProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
@@ -94,7 +102,26 @@ namespace NUpdater
             var args = (DownloadProgressEventArgs) e.UserState;
 
             progressBar1.Value = (int)args.Percent;
-            progressBar2.Value += args.Count;
+
+            Interlocked.Add(ref _indexDownload, args.Count);
+
+            var step = (int)(100.0*_indexDownload/_totalDownload);
+
+            progressBar2.Value = step;
+            _notifyIcon.Text = string.Format(Properties.Resources.UpdateFileProgress, step + "%");
+        }
+
+        private void UpdateFormLoad(object sender, EventArgs e)
+        {
+            UpdateWorker.RunWorkerAsync();
+        }
+
+        private void UpdateFormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason != CloseReason.UserClosing) return;
+
+            e.Cancel = true;
+            Hide();
         }
     }
 }

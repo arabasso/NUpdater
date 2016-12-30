@@ -9,6 +9,8 @@ namespace NUpdater
 {
     static class Program
     {
+        private static UpdateForm _updateForm;
+
         static Process PriorProcess(Process curr)
         {
             var currentSessionId = Process.GetCurrentProcess().SessionId;
@@ -30,10 +32,25 @@ namespace NUpdater
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            var menuItemRestore = new ToolStripMenuItem(Properties.Resources.MenuItemRestore);
+
+            menuItemRestore.Click += MenuItemRestoreOnClick;
+
+            var menuItemClose = new ToolStripMenuItem(Properties.Resources.MenuItemClose);
+
+            menuItemClose.Click += MenuItemOnClick;
+
+            var contextMenuStrip = new ContextMenuStrip();
+
+            contextMenuStrip.Items.Add(menuItemRestore);
+            contextMenuStrip.Items.Add(new ToolStripSeparator());
+            contextMenuStrip.Items.Add(menuItemClose);
+
             var notifyIcon = new NotifyIcon
             {
                 Visible = true,
-                Icon = Properties.Resources.Icon_ico
+                Icon = Properties.Resources.Icon_ico,
+                ContextMenuStrip = contextMenuStrip,
             };
 
             var updater = new Updater();
@@ -72,7 +89,9 @@ namespace NUpdater
 
                 if (!updater.ShouldDownload()) return;
 
-                Application.Run(new UpdateForm(notifyIcon, updater));
+                _updateForm = new UpdateForm(notifyIcon, updater);
+
+                Application.Run(_updateForm);
             }
 
             catch (Exception ex)
@@ -84,6 +103,16 @@ namespace NUpdater
             {
                 notifyIcon.Visible = false;
             }
+        }
+
+        private static void MenuItemRestoreOnClick(object sender, EventArgs eventArgs)
+        {
+            _updateForm.Show();
+        }
+
+        private static void MenuItemOnClick(object sender, EventArgs eventArgs)
+        {
+            Application.Exit();
         }
     }
 }

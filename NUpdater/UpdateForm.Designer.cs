@@ -144,6 +144,8 @@
             this.Name = "UpdateForm";
             this.Text = "Updating";
             this.TopMost = true;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.UpdateFormClosing);
+            this.Load += new System.EventHandler(this.UpdateFormLoad);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
