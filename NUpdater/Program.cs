@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -13,6 +14,7 @@ namespace NUpdater
     {
         private static UpdateForm _updateForm;
         private static BindingSource _registryConfigurationBindingSource;
+        private static ToolStripMenuItem _menuItemRestore;
 
         static Process PriorProcess(Process curr)
         {
@@ -123,9 +125,9 @@ namespace NUpdater
 
         private static ContextMenuStrip NotifyIconContextMenuStrip()
         {
-            var menuItemRestore = new ToolStripMenuItem(Properties.Resources.MenuItemRestore);
+            _menuItemRestore = new ToolStripMenuItem(Properties.Resources.MenuItemRestore);
 
-            menuItemRestore.Click += MenuItemRestoreOnClick;
+            _menuItemRestore.Click += MenuItemRestoreOnClick;
 
             var menuItemClose = new ToolStripMenuItem(Properties.Resources.MenuItemClose);
 
@@ -141,18 +143,34 @@ namespace NUpdater
 
             var contextMenuStrip = new ContextMenuStrip();
 
-            contextMenuStrip.Items.Add(menuItemRestore);
+            contextMenuStrip.Items.Add(_menuItemRestore);
             contextMenuStrip.Items.Add(new ToolStripSeparator());
             contextMenuStrip.Items.Add(menuItemStartMinimized);
             contextMenuStrip.Items.Add(new ToolStripSeparator());
             contextMenuStrip.Items.Add(menuItemClose);
+            contextMenuStrip.Opening += ContextMenuStripOnOpening;
 
             return contextMenuStrip;
         }
 
+        private static void ContextMenuStripOnOpening(object sender, CancelEventArgs cancelEventArgs)
+        {
+            _menuItemRestore.Text = _updateForm.Visible
+                ? Properties.Resources.MenuItemMinimize
+                : Properties.Resources.MenuItemRestore;
+        }
+
         private static void MenuItemRestoreOnClick(object sender, EventArgs eventArgs)
         {
-            _updateForm.Show();
+            if (_updateForm.Visible)
+            {
+                _updateForm.Hide();
+            }
+
+            else
+            {
+                _updateForm.Show();
+            }
         }
 
         private static void MenuItemOnClick(object sender, EventArgs eventArgs)

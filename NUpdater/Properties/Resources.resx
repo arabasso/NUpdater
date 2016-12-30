@@ -133,6 +133,9 @@
   <data name="MenuItemClose" xml:space="preserve">
     <value>&amp;Sair</value>
   </data>
+  <data name="MenuItemMinimize" xml:space="preserve">
+    <value>Minimizar</value>
+  </data>
   <data name="MenuItemRestore" xml:space="preserve">
     <value>&amp;Restaurar</value>
   </data>

@@ -100,7 +100,6 @@
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="App.config" />
-    <None Include="Properties\DataSources\RegistryConfiguration.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

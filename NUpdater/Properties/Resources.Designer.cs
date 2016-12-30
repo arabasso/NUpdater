@@ -108,6 +108,15 @@ namespace NUpdater.Properties {
         }
         
         /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Minimizar.
+        /// </summary>
+        internal static string MenuItemMinimize {
+            get {
+                return ResourceManager.GetString("MenuItemMinimize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Consulta uma cadeia de caracteres localizada semelhante a &amp;Restaurar.
         /// </summary>
         internal static string MenuItemRestore {
