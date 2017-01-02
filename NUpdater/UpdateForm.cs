@@ -18,6 +18,11 @@ namespace NUpdater
 
             InitializeComponent();
 
+            WindowState = FormWindowState.Minimized;
+            ShowInTaskbar = false;
+
+            Shown += OnShown;
+
             RegistryConfigurationBindingSource.DataSource = registryConfiguration;
 
             Text = _updater.Deployment.Configuration.Company + @" - " + string.Format(Properties.Resources.AppUpdate, _updater.Deployment.Configuration.Name);
@@ -34,6 +39,12 @@ namespace NUpdater
             _updater.UpdateFile += OnUpdateFile;
 
             _totalDownload = _updater.TotalDownload;
+        }
+
+        private void OnShown(object sender, EventArgs eventArgs)
+        {
+            ShowInTaskbar = true;
+            Hide();
         }
 
         private void OnUpdaterStartDownload(DownloadEventArgs args)
@@ -113,6 +124,24 @@ namespace NUpdater
 
             e.Cancel = true;
             Hide();
+        }
+
+        public void ToggleVisivility(FormWindowState windowState)
+        {
+            if (Visible)
+            {
+                Hide();
+            }
+
+            else
+            {
+                Show();
+
+                if (WindowState != windowState)
+                {
+                    WindowState = windowState;
+                }
+            }
         }
     }
 }

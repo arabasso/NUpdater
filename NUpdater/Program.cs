@@ -89,7 +89,7 @@ namespace NUpdater
 
                 if (task.Result)
                 {
-                    Application.Run();
+                    Application.Run(_updateForm);
                 }
             }
 
@@ -116,10 +116,7 @@ namespace NUpdater
 
                 if (!updater.ShouldDownload()) return false;
 
-                _updateForm = new UpdateForm(cfg, notifyIcon, updater)
-                {
-                    Visible = !cfg.StartMinimized
-                };
+                _updateForm = new UpdateForm(cfg, notifyIcon, updater);
 
                 return true;
             }, registryConfiguration, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.FromCurrentSynchronizationContext());
@@ -164,15 +161,7 @@ namespace NUpdater
 
         private static void MenuItemRestoreOnClick(object sender, EventArgs eventArgs)
         {
-            if (_updateForm.Visible)
-            {
-                _updateForm.Hide();
-            }
-
-            else
-            {
-                _updateForm.Show();
-            }
+            _updateForm.ToggleVisivility(FormWindowState.Normal);
         }
 
         private static void NotifyIconOnDoubleClick(object sender, EventArgs eventArgs)
