@@ -133,22 +133,22 @@ namespace NUpdater
         {
             if (Visible)
             {
-                if (WindowState == windowState)
-                {
-                    WindowState = FormWindowState.Minimized;
-                }
-
                 Hide();
             }
 
             else
             {
-                Show();
+                ShowAndRestore(windowState);
+            }
+        }
 
-                if (WindowState != windowState)
-                {
-                    WindowState = windowState;
-                }
+        public void ShowAndRestore(FormWindowState windowState)
+        {
+            Show();
+
+            if (WindowState != windowState)
+            {
+                WindowState = windowState;
             }
         }
     }

@@ -166,7 +166,7 @@ namespace NUpdater
 
         private static void NotifyIconOnDoubleClick(object sender, EventArgs eventArgs)
         {
-            _updateForm.Show();
+            _updateForm.ShowAndRestore(FormWindowState.Normal);
         }
 
         private static void MenuItemOnClick(object sender, EventArgs eventArgs)
