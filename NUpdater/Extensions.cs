@@ -48,10 +48,9 @@ namespace NUpdater
 
         public static bool Like(this string str, string pattern)
         {
-            return new Regex(
-                "^" + Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", ".") + "$",
-                RegexOptions.IgnoreCase | RegexOptions.Singleline
-            ).IsMatch(str);
+            var p = "^" + Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", ".") + "$";
+
+            return Regex.IsMatch(str, p, RegexOptions.IgnoreCase | RegexOptions.Singleline);
         }
     }
 }
