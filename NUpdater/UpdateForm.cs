@@ -18,10 +18,13 @@ namespace NUpdater
 
             InitializeComponent();
 
-            WindowState = FormWindowState.Minimized;
-            ShowInTaskbar = false;
+            if (registryConfiguration.StartMinimized)
+            {
+                WindowState = FormWindowState.Minimized;
+                ShowInTaskbar = false;
 
-            Shown += OnShown;
+                Shown += OnShown;
+            }
 
             RegistryConfigurationBindingSource.DataSource = registryConfiguration;
 
@@ -130,6 +133,11 @@ namespace NUpdater
         {
             if (Visible)
             {
+                if (WindowState == windowState)
+                {
+                    WindowState = FormWindowState.Minimized;
+                }
+
                 Hide();
             }
 
