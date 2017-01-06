@@ -210,7 +210,7 @@ namespace NUpdater
                 Directory.CreateDirectory(directory);
             }
 
-            using (var stream = File.OpenWrite(file))
+            using (var stream = File.Open(file, FileMode.OpenOrCreate))
             {
                 var serializer = new XmlSerializer(typeof(DeploymentTransfer));
 

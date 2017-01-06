@@ -135,7 +135,7 @@ namespace NUpdater
             using (var response = request.GetResponse())
             using (var streamIn = response.GetResponseStream())
             using (var stream = new DeflateStream(streamIn, CompressionMode.Decompress))
-            using (var streamOut = File.OpenWrite(TempPath))
+            using (var streamOut = File.Open(TempPath, FileMode.OpenOrCreate))
             {
                 int count;
                 var buffer = new byte[0x4000];
@@ -212,7 +212,7 @@ namespace NUpdater
             }
 
             using (var streamIn = _fileInfo.OpenRead())
-            using (var stream = File.OpenWrite(file))
+            using (var stream = File.Open(file, FileMode.OpenOrCreate))
             using (var streamOut = new DeflateStream(stream, CompressionMode.Compress))
             {
                 int count;

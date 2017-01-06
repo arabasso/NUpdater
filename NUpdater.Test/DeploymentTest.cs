@@ -65,7 +65,7 @@ namespace NUpdater.Test
         {
             var firstFile = _deployment.Files.First();
 
-            using (var stream = File.OpenWrite(firstFile.LocalPath))
+            using (var stream = File.Open(firstFile.LocalPath, FileMode.OpenOrCreate))
             {
                 Assert.That(_deployment.UpdateIsPossible(), Is.False);
 
@@ -153,7 +153,7 @@ namespace NUpdater.Test
         [TestCase(@"App\App.vshost.exe.manifest")]
         public void From_assembly_excluded_extension(string file)
         {
-            using (File.OpenWrite(file))
+            using (File.Open(file, FileMode.OpenOrCreate))
             {
             }
 
