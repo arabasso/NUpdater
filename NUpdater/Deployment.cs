@@ -158,7 +158,17 @@ namespace NUpdater
 
         public bool IsValid()
         {
-            return Files.All(a => a.IsValid() || a.HasTemp);
+            return Files.All(a =>
+            {
+                var flag = a.IsValid();
+
+                if (!flag)
+                {
+
+                }
+
+                return flag;
+            });
         }
 
         public bool HasTemp()
@@ -180,12 +190,12 @@ namespace NUpdater
 
         public bool UpdateIsPossible()
         {
-            return !Files.Any(a => a.IsLocked) && ShouldUpdate();
+            return !Files.Any(a => a.IsLocked);
         }
 
         public void Update()
         {
-            foreach (var file in Files.Where(w => !w.IsLocked))
+            foreach (var file in Files)
             {
                 file.Update();
             }

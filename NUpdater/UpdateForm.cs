@@ -94,7 +94,7 @@ namespace NUpdater
                 }
             }
 
-            _updater.RunApplication();
+            _updater.UpdateAndExecuteApplication();
         }
 
         private void UpdateWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)

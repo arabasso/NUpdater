@@ -15,6 +15,11 @@ namespace NUpdater
         public DateTime Date { get; set; }
         public string Hash { get; set; }
 
+        public override string ToString()
+        {
+            return $"{Name} - {Hash}";
+        }
+
         public DeploymentFile(Deployment deployment, DeploymentFileTransfer transfer)
         {
             Deployment = deployment;
@@ -168,12 +173,7 @@ namespace NUpdater
 
         public void Update()
         {
-            if (!ShouldUpdate()) return;
-
-            if (!HasTemp)
-            {
-                Download();
-            }
+            if (!File.Exists(TempPath)) return;
 
             var localDir = Path.GetDirectoryName(LocalPath);
 

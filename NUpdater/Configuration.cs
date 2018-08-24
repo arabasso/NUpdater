@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Configuration;
-using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Net.Cache;
@@ -10,6 +9,7 @@ namespace NUpdater
     public class Configuration
     {
         private string _tempDir;
+        public Execution Execution { get; set; } = Execution.Before;
         public string Name { get; set; } = "App";
         public string Company { get; set; } = "Company";
         public Uri Address { get; set; } = new Uri("http://localhost/App/Deployment.xml");
@@ -45,6 +45,7 @@ namespace NUpdater
 
             var cfg = new Configuration
             {
+                Execution = Execution.Before,
                 Name = appSettings["Name"],
                 Company = appSettings["Company"],
                 Address = new Uri(appSettings["Address"]),
@@ -56,6 +57,11 @@ namespace NUpdater
                 ProxyPassword = appSettings["ProxyPassword"],
                 ProxyUser = appSettings["ProxyUser"]
             };
+
+            if (Enum.TryParse<Execution>(appSettings["Execution"], out var execution))
+            {
+                cfg.Execution = execution;
+            }
 
             if (!string.IsNullOrEmpty(appSettings["TempDir"]))
             {

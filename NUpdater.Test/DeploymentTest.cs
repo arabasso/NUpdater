@@ -65,7 +65,7 @@ namespace NUpdater.Test
         {
             var firstFile = _deployment.Files.First();
 
-            using (var stream = File.Open(firstFile.LocalPath, FileMode.Create))
+            using (var stream = File.Open(firstFile.LocalPath, FileMode.Open, FileAccess.Read))
             {
                 Assert.That(_deployment.UpdateIsPossible(), Is.False);
 

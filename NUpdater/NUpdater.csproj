@@ -72,6 +72,7 @@
     <Compile Include="Deployment.cs" />
     <Compile Include="DeploymentFile.cs" />
     <Compile Include="Events.cs" />
+    <Compile Include="Execution.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="RegistryConfiguration.cs" />
     <Compile Include="Transfers\DeploymentTransfer.cs" />
@@ -85,6 +86,8 @@
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Updater.cs" />
+    <Compile Include="UpdaterExecutionAfter.cs" />
+    <Compile Include="UpdaterExecutionBefore.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
