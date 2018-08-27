@@ -43,7 +43,7 @@ namespace NUpdater
 
         public static void ShowBalloonTip(this NotifyIcon notifyIcon, Exception exception)
         {
-            notifyIcon.ShowBalloonTip(2000, "", exception.Message, ToolTipIcon.Error);
+            notifyIcon.ShowBalloonTip(3000, "", exception.Message, ToolTipIcon.Error);
         }
 
         public static bool Like(this string str, string pattern)

@@ -60,11 +60,18 @@ namespace NUpdater
 
             try
             {
+                if (!Configuration.HasTempDeploymentPath)
+                {
+                    Deployment.SaveTemp();
+                }
+
                 Run(notifyIcon, registryConfiguration);
             }
 
             catch (Exception ex)
             {
+                ExecuteApplication();
+
                 notifyIcon.ShowBalloonTip(ex);
             }
 
